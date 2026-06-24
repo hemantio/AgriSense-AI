@@ -5,6 +5,7 @@ import { api } from "@/lib/api-client";
 import { useAuthStore } from "@/stores/auth-store";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { Sun, Cloud, CloudRain, CloudLightning, CloudSnow, Wind, Droplets, Thermometer, RefreshCw } from "lucide-react";
 
 interface WeatherAlert {
   event: string;
@@ -27,8 +28,8 @@ interface Recommendation {
   id: string;
   title: string;
   message: string;
-  priority: string; // HIGH, MEDIUM, LOW
-  category: string; // Irrigation, Pest, Sowing, Harvest
+  priority: string;
+  category: string;
   created_at: string;
 }
 
@@ -43,6 +44,99 @@ const DEFAULT_WEATHER: WeatherData = {
   alerts: [],
 };
 
+// Custom animated weather component
+function AnimatedWeatherIcon({ iconCode, size = 64 }: { iconCode: string; size?: number }) {
+  const isSunny = iconCode.startsWith("01");
+  const isFewClouds = iconCode.startsWith("02");
+  const isScattered = iconCode.startsWith("03") || iconCode.startsWith("04");
+  const isRainy = iconCode.startsWith("09") || iconCode.startsWith("10");
+  const isThunder = iconCode.startsWith("11");
+  const isSnow = iconCode.startsWith("13");
+
+  if (isSunny) {
+    return (
+      <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+          className="absolute inset-0 flex items-center justify-center"
+        >
+          <Sun className="w-full h-full text-yellow-400 drop-shadow-[0_0_12px_rgba(250,204,21,0.5)]" />
+        </motion.div>
+      </div>
+    );
+  }
+
+  if (isFewClouds || isScattered) {
+    return (
+      <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
+        <motion.div
+          animate={{ y: [-2, 2, -2] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute inset-0 flex items-center justify-center"
+        >
+          <Cloud className="w-full h-full text-zinc-400 drop-shadow-[0_0_10px_rgba(161,161,170,0.3)]" />
+        </motion.div>
+      </div>
+    );
+  }
+
+  if (isRainy) {
+    return (
+      <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
+        <motion.div
+          animate={{ y: [-1, 1, -1] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute inset-0 flex items-center justify-center"
+        >
+          <CloudRain className="w-full h-full text-blue-400 drop-shadow-[0_0_10px_rgba(96,165,250,0.4)]" />
+        </motion.div>
+      </div>
+    );
+  }
+
+  if (isThunder) {
+    return (
+      <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
+        <motion.div
+          animate={{ scale: [0.98, 1.02, 0.98] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute inset-0 flex items-center justify-center"
+        >
+          <CloudLightning className="w-full h-full text-amber-500 drop-shadow-[0_0_12px_rgba(245,158,11,0.5)]" />
+        </motion.div>
+      </div>
+    );
+  }
+
+  if (isSnow) {
+    return (
+      <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
+        <motion.div
+          animate={{ rotate: [-5, 5, -5] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute inset-0 flex items-center justify-center"
+        >
+          <CloudSnow className="w-full h-full text-zinc-200 drop-shadow-[0_0_10px_rgba(255,255,255,0.4)]" />
+        </motion.div>
+      </div>
+    );
+  }
+
+  // Default cloud/sun mix
+  return (
+    <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
+      <motion.div
+        animate={{ y: [-2, 2, -2] }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute inset-0 flex items-center justify-center"
+      >
+        <Cloud className="w-full h-full text-zinc-400" />
+      </motion.div>
+    </div>
+  );
+}
+
 export default function WeatherPage() {
   const { user } = useAuthStore();
   const [weather, setWeatherData] = useState<WeatherData>(DEFAULT_WEATHER);
@@ -53,21 +147,17 @@ export default function WeatherPage() {
   const fetchWeatherAndRecommendations = async () => {
     setIsLoading(true);
     try {
-      // Fetch weather data
-      const weatherRes = await api.getWeather({ lat: 18.5204, lon: 73.8567 }); // Defaults to Pune coordinates
+      const weatherRes = await api.getWeather({ lat: 18.5204, lon: 73.8567 });
       if (weatherRes.data) {
         setWeatherData(weatherRes.data);
       }
 
-      // Fetch 5-day forecast
       const forecastRes = await api.getWeatherForecast({ lat: 18.5204, lon: 73.8567 });
       if (forecastRes.data && forecastRes.data.list) {
-        // Filter daily values (roughly 1 per day, e.g. at 12:00 PM)
         const daily = forecastRes.data.list.filter((item: any) => item.dt_txt.includes("12:00:00"));
         setForecast(daily);
       }
 
-      // Fetch AI recommendations
       const recRes = await api.getRecommendations();
       setRecommendations(recRes.data.recommendations || recRes.data || []);
       toast.success("Weather metrics and AI recommendations updated!");
@@ -86,10 +176,10 @@ export default function WeatherPage() {
     <div className="space-y-6 animate-fade-in pb-16">
       {/* Header */}
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
+        <h1 className="text-2xl md:text-3xl font-black text-white">
           Weather Intelligence & AI Recommendations 🌤️
         </h1>
-        <p className="text-sm text-[var(--text-secondary)] mt-1">
+        <p className="text-sm text-zinc-400 mt-1">
           Stay ahead of changing atmospheric patterns and receive Gemini-powered organic crop suggestions.
         </p>
       </div>
@@ -98,41 +188,42 @@ export default function WeatherPage() {
         {/* Left Column: Current weather + Forecast */}
         <div className="lg:col-span-1 space-y-6">
           {/* Current Weather Card */}
-          <div className="glass-card p-6 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 gradient-warm opacity-10 blur-3xl pointer-events-none" />
+          <div className="glass-card p-6 border border-zinc-800/80 bg-zinc-950/40 backdrop-blur-xl relative overflow-hidden group hover:border-emerald-500/20">
+            <div className="absolute top-0 right-0 w-32 h-32 gradient-warm opacity-5 blur-3xl pointer-events-none" />
 
             <div className="flex justify-between items-start">
               <div>
-                <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Current Conditions</span>
-                <h2 className="text-2xl font-bold text-[var(--text-primary)] mt-1">{weather.location_name}</h2>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-mono">Current Conditions</span>
+                <h2 className="text-2xl font-black text-white mt-1">{weather.location_name}</h2>
               </div>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`}
-                alt={weather.description}
-                className="w-16 h-16 object-contain"
-              />
+              <AnimatedWeatherIcon iconCode={weather.icon} size={64} />
             </div>
 
             <div className="flex items-baseline mt-4">
-              <span className="text-5xl font-black text-[var(--text-primary)]">{weather.temp}°C</span>
-              <span className="text-sm text-[var(--text-secondary)] ml-2 capitalize font-medium">
+              <span className="text-5xl font-black text-white">{weather.temp}°C</span>
+              <span className="text-xs text-zinc-400 ml-2.5 capitalize font-bold">
                 &bull; {weather.description}
               </span>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 border-t border-[var(--border-light)] mt-6 pt-6 text-center text-xs text-[var(--text-secondary)]">
+            <div className="grid grid-cols-3 gap-4 border-t border-zinc-900 mt-6 pt-6 text-center text-xs text-zinc-400">
               <div>
-                <p className="text-[var(--text-muted)] font-semibold uppercase tracking-wider text-[9px] mb-1">Humidity</p>
-                <p className="font-bold text-sm text-[var(--text-primary)]">{weather.humidity}%</p>
+                <p className="text-zinc-500 font-bold uppercase tracking-wider text-[9px] mb-1 font-mono">Humidity</p>
+                <p className="font-bold text-sm text-white flex items-center justify-center gap-1">
+                  <Droplets className="w-3.5 h-3.5 text-blue-400" /> {weather.humidity}%
+                </p>
               </div>
               <div>
-                <p className="text-[var(--text-muted)] font-semibold uppercase tracking-wider text-[9px] mb-1">Wind Speed</p>
-                <p className="font-bold text-sm text-[var(--text-primary)]">{weather.wind_speed} km/h</p>
+                <p className="text-zinc-500 font-bold uppercase tracking-wider text-[9px] mb-1 font-mono">Wind Speed</p>
+                <p className="font-bold text-sm text-white flex items-center justify-center gap-1">
+                  <Wind className="w-3.5 h-3.5 text-teal-400" /> {weather.wind_speed} km/h
+                </p>
               </div>
               <div>
-                <p className="text-[var(--text-muted)] font-semibold uppercase tracking-wider text-[9px] mb-1">Rainfall</p>
-                <p className="font-bold text-sm text-[var(--text-primary)]">{weather.rain_1h || 0} mm</p>
+                <p className="text-zinc-500 font-bold uppercase tracking-wider text-[9px] mb-1 font-mono">Rainfall</p>
+                <p className="font-bold text-sm text-white flex items-center justify-center gap-1">
+                  <CloudRain className="w-3.5 h-3.5 text-sky-400" /> {weather.rain_1h || 0} mm
+                </p>
               </div>
             </div>
 
@@ -143,7 +234,7 @@ export default function WeatherPage() {
                 {weather.alerts.map((alert, index) => (
                   <div key={index}>
                     <p className="font-semibold uppercase">{alert.event} ({alert.severity})</p>
-                    <p className="mt-0.5 leading-relaxed text-[var(--text-muted)]">{alert.description}</p>
+                    <p className="mt-0.5 leading-relaxed text-zinc-500">{alert.description}</p>
                   </div>
                 ))}
               </div>
@@ -151,31 +242,26 @@ export default function WeatherPage() {
           </div>
 
           {/* 5-Day Forecast */}
-          <div className="glass-card p-6">
-            <h2 className="text-sm font-bold text-[var(--text-primary)] mb-4">5-Day Forecast</h2>
+          <div className="glass-card p-6 border border-zinc-800/80 bg-zinc-950/40 backdrop-blur-xl">
+            <h2 className="text-sm font-bold text-white mb-4">5-Day Meteorological Forecast</h2>
             {isLoading ? (
               <div className="space-y-4 animate-pulse">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="h-10 bg-[var(--bg-secondary)] rounded-lg" />
+                  <div key={i} className="h-10 bg-zinc-900/20 rounded-lg" />
                 ))}
               </div>
             ) : forecast.length === 0 ? (
-              <p className="text-xs text-[var(--text-muted)] text-center py-4">Forecast data temporarily unavailable.</p>
+              <p className="text-xs text-zinc-500 text-center py-4">Forecast data temporarily unavailable.</p>
             ) : (
               <div className="space-y-3.5">
                 {forecast.map((item, idx) => (
-                  <div key={idx} className="flex items-center justify-between text-xs py-1 border-b border-[var(--border-light)] last:border-b-0">
-                    <span className="font-medium text-[var(--text-secondary)]">
+                  <div key={idx} className="flex items-center justify-between text-xs py-1 border-b border-zinc-900 last:border-b-0">
+                    <span className="font-semibold text-zinc-400">
                       {new Date(item.dt_txt).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}
                     </span>
-                    <div className="flex items-center gap-1.5">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={`https://openweathermap.org/img/wn/${item.weather[0].icon}.png`}
-                        alt="icon"
-                        className="w-8 h-8 object-contain"
-                      />
-                      <span className="font-bold text-[var(--text-primary)]">{Math.round(item.main.temp)}°C</span>
+                    <div className="flex items-center gap-2.5">
+                      <AnimatedWeatherIcon iconCode={item.weather[0].icon} size={32} />
+                      <span className="font-bold text-white font-mono">{Math.round(item.main.temp)}°C</span>
                     </div>
                   </div>
                 ))}
@@ -186,32 +272,32 @@ export default function WeatherPage() {
 
         {/* Right Column: AI context recommendations list */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="glass-card p-6 relative overflow-hidden">
+          <div className="glass-card p-6 border border-zinc-800/80 bg-zinc-950/40 backdrop-blur-xl relative overflow-hidden group hover:border-emerald-500/20">
             <div className="absolute top-0 right-0 w-32 h-32 gradient-accent opacity-5 blur-3xl pointer-events-none" />
 
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-base font-bold text-[var(--text-primary)]">
-                🤖 Gemini Contextual AI Advice
+              <h2 className="text-base font-bold text-white flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" /> Gemini Contextual AI Advice
               </h2>
               <button
                 onClick={fetchWeatherAndRecommendations}
-                className="text-xs text-[var(--color-primary-light)] hover:underline"
+                className="text-xs text-[var(--color-primary-light)] hover:underline flex items-center gap-1 cursor-pointer font-bold font-mono uppercase text-[10px]"
               >
-                Refresh Advice
+                <RefreshCw className="w-3 h-3" /> Refresh Advice
               </button>
             </div>
 
             {isLoading ? (
               <div className="space-y-6 animate-pulse">
                 {[1, 2].map((i) => (
-                  <div key={i} className="h-24 bg-[var(--bg-secondary)] rounded-lg" />
+                  <div key={i} className="h-24 bg-zinc-900/20 rounded-lg" />
                 ))}
               </div>
             ) : recommendations.length === 0 ? (
-              <div className="p-8 text-center bg-[var(--bg-tertiary)]/20 border border-[var(--border-color)] rounded-xl">
+              <div className="p-8 text-center bg-zinc-900/10 border border-zinc-800 rounded-xl">
                 <span className="text-2xl block mb-2">💡</span>
-                <p className="text-xs text-[var(--text-secondary)]">No recommendations available at this time.</p>
-                <p className="text-[10px] text-[var(--text-muted)] mt-1">Register farm plots and plant crops to receive context-aware AI farming advice.</p>
+                <p className="text-xs text-zinc-400 font-semibold">No recommendations available at this time.</p>
+                <p className="text-[10px] text-zinc-500 mt-1">Register farm plots and plant crops to receive context-aware AI farming advice.</p>
               </div>
             ) : (
               <div className="space-y-6">
@@ -224,10 +310,10 @@ export default function WeatherPage() {
                     whileHover={{ scale: 1.01 }}
                     className={`p-5 rounded-xl border transition-all ${
                       rec.priority === "HIGH"
-                        ? "bg-red-950/15 border-red-500/20 hover:border-red-500/40"
+                        ? "bg-red-950/10 border-red-500/20 hover:border-red-500/40 glow-border-rose"
                         : rec.priority === "MEDIUM"
-                        ? "bg-yellow-950/15 border-yellow-500/20 hover:border-yellow-500/40"
-                        : "bg-emerald-950/15 border-emerald-500/20 hover:border-emerald-500/40"
+                        ? "bg-yellow-950/10 border-yellow-500/20 hover:border-yellow-500/40 glow-border-amber"
+                        : "bg-emerald-950/10 border-emerald-500/20 hover:border-emerald-500/40 glow-border-emerald"
                     }`}
                   >
                     <div className="flex justify-between items-start mb-2">
@@ -235,10 +321,10 @@ export default function WeatherPage() {
                         <span className="text-base">
                           {rec.category === "Irrigation" ? "💧" : rec.category === "Pest" ? "🐛" : rec.category === "Sowing" ? "🌱" : "🌾"}
                         </span>
-                        <h3 className="font-bold text-sm text-[var(--text-primary)]">{rec.title}</h3>
+                        <h3 className="font-bold text-sm text-white">{rec.title}</h3>
                       </div>
                       <span
-                        className={`text-[9px] px-2 py-0.5 rounded font-bold ${
+                        className={`text-[9px] px-2 py-0.5 rounded font-bold font-mono ${
                           rec.priority === "HIGH"
                             ? "bg-red-900/30 text-red-400 border border-red-500/30"
                             : rec.priority === "MEDIUM"
@@ -250,11 +336,11 @@ export default function WeatherPage() {
                       </span>
                     </div>
 
-                    <p className="text-xs text-[var(--text-secondary)] leading-relaxed whitespace-pre-line">
+                    <p className="text-xs text-zinc-400 leading-relaxed whitespace-pre-line">
                       {rec.message}
                     </p>
 
-                    <div className="mt-3.5 pt-2 border-t border-[var(--border-light)] flex justify-between items-center text-[9px] text-[var(--text-muted)]">
+                    <div className="mt-3.5 pt-2 border-t border-zinc-900 flex justify-between items-center text-[9px] text-zinc-500 font-mono">
                       <span>Advice generated: {new Date(rec.created_at).toLocaleDateString()}</span>
                       <span className="capitalize">Category: {rec.category}</span>
                     </div>

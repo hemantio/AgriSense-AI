@@ -4,13 +4,13 @@ AgriSense AI — Irrigation Log Model
 Tracks irrigation events with water usage estimation.
 """
 
-import uuid
+import GUID
 from datetime import UTC, date, datetime
 
-from sqlalchemy import Date, DateTime, Float, ForeignKey, String, Text, Uuid
+from sqlalchemy import Date, DateTime, Float, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.database import Base
+from app.database import Base, GUID
 
 
 class IrrigationLog(Base):
@@ -18,16 +18,16 @@ class IrrigationLog(Base):
 
     __tablename__ = "irrigation_logs"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        Uuid,
+    id: Mapped[GUID.GUID] = mapped_column(
+        GUID,
         primary_key=True,
-        default=uuid.uuid4,
+        default=GUID.uuid4,
         index=True,
     )
 
     # --- Foreign Key ---
-    plot_id: Mapped[uuid.UUID] = mapped_column(
-        Uuid,
+    plot_id: Mapped[GUID.GUID] = mapped_column(
+        GUID,
         ForeignKey("farm_plots.id", ondelete="CASCADE"),
         nullable=False,
         index=True,

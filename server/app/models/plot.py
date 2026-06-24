@@ -5,13 +5,13 @@ Represents individual farm plots owned by farmers.
 Supports map-based coordinates and admin verification.
 """
 
-import uuid
+import GUID
 from datetime import UTC, datetime
 
-from sqlalchemy import DateTime, Float, ForeignKey, String, Text, Uuid
+from sqlalchemy import DateTime, Float, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.database import Base
+from app.database import Base, GUID
 
 
 class FarmPlot(Base):
@@ -19,16 +19,16 @@ class FarmPlot(Base):
 
     __tablename__ = "farm_plots"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        Uuid,
+    id: Mapped[GUID.GUID] = mapped_column(
+        GUID,
         primary_key=True,
-        default=uuid.uuid4,
+        default=GUID.uuid4,
         index=True,
     )
 
     # --- Foreign Key ---
-    farmer_id: Mapped[uuid.UUID] = mapped_column(
-        Uuid,
+    farmer_id: Mapped[GUID.GUID] = mapped_column(
+        GUID,
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
@@ -51,8 +51,8 @@ class FarmPlot(Base):
     verification_status: Mapped[str] = mapped_column(
         String(20), nullable=False, default="pending"
     )  # "pending", "verified", "rejected"
-    verified_by: Mapped[uuid.UUID | None] = mapped_column(
-        Uuid, nullable=True
+    verified_by: Mapped[GUID.GUID | None] = mapped_column(
+        GUID, nullable=True
     )
     verified_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True

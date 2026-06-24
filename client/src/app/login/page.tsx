@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { api, setTokens } from "@/lib/api-client";
 import { useAuthStore } from "@/stores/auth-store";
 import { loginSchema } from "@/lib/validators";
 import { Sprout, Mail, Lock, Key, ShieldCheck } from "lucide-react";
+import BackgroundCanvas from "@/components/BackgroundCanvas";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -47,32 +49,38 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden bg-[#030303]">
+      {/* Background Canvas Particles */}
+      <BackgroundCanvas />
+
       {/* Background Glow */}
       <div className="absolute inset-0 -z-10 pointer-events-none">
         <div
-          className="absolute top-[20%] left-[30%] w-[500px] h-[500px] rounded-full opacity-[0.15]"
+          className="absolute top-[20%] left-[30%] w-[500px] h-[500px] rounded-full opacity-[0.12]"
           style={{
             background: "radial-gradient(circle, var(--color-primary) 0%, transparent 75%)",
           }}
         />
         <div
-          className="absolute bottom-[20%] right-[30%] w-[400px] h-[400px] rounded-full opacity-[0.1]"
+          className="absolute bottom-[20%] right-[30%] w-[400px] h-[400px] rounded-full opacity-[0.08]"
           style={{
             background: "radial-gradient(circle, var(--color-accent) 0%, transparent 75%)",
           }}
         />
       </div>
 
-      <div className="w-full max-w-md animate-fade-in relative z-10">
+      <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3 group">
-            <div className="w-11 h-11 rounded-lg gradient-primary flex items-center justify-center text-white transition-transform group-hover:scale-105">
-              <Sprout className="w-6 h-6" />
-            </div>
+            <motion.div
+              whileHover={{ rotate: 10, scale: 1.05 }}
+              className="w-11 h-11 rounded-lg gradient-primary flex items-center justify-center text-white"
+            >
+              <Sprout className="w-6 h-6 text-zinc-900" />
+            </motion.div>
             <span className="text-2xl font-bold tracking-tight text-white">
               AgriSense{" "}
-              <span style={{ color: "var(--color-primary-light)" }}>AI</span>
+              <span className="text-[var(--color-primary-light)]">AI</span>
             </span>
           </Link>
           <p className="mt-3 text-sm text-zinc-400">
@@ -81,20 +89,22 @@ export default function LoginPage() {
         </div>
 
         {/* Login Card */}
-        <div className="glass-card p-8 border border-[rgba(255,255,255,0.06)] bg-[rgba(10,10,12,0.65)] backdrop-blur-md shadow-2xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 100, damping: 15 }}
+          className="glass-card p-8 border border-zinc-800/80 bg-zinc-950/60 backdrop-blur-xl shadow-2xl rounded-2xl"
+        >
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Error Message */}
             {error && (
-              <div
-                className="p-3 rounded-lg text-xs animate-fade-in flex items-center gap-2"
-                style={{
-                  background: "rgba(239, 68, 68, 0.08)",
-                  border: "1px solid rgba(239, 68, 68, 0.2)",
-                  color: "var(--color-danger-light)",
-                }}
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                className="p-3 rounded-lg text-xs flex items-center gap-2 bg-red-950/20 border border-red-500/20 text-[var(--color-danger-light)]"
               >
                 <span>⚠️</span> {error}
-              </div>
+              </motion.div>
             )}
 
             {/* Email */}
@@ -112,7 +122,7 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="input-field pl-10"
+                  className="input-field pl-10 border-zinc-800 focus:border-[var(--color-primary-light)] focus:shadow-[0_0_12px_rgba(52,211,153,0.15)] bg-zinc-950/80 rounded-lg text-white"
                   placeholder="ramesh@agrisense.ai"
                   required
                   autoComplete="email"
@@ -136,7 +146,7 @@ export default function LoginPage() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="input-field pl-10"
+                  className="input-field pl-10 border-zinc-800 focus:border-[var(--color-primary-light)] focus:shadow-[0_0_12px_rgba(52,211,153,0.15)] bg-zinc-950/80 rounded-lg text-white"
                   placeholder="••••••••"
                   required
                   autoComplete="current-password"
@@ -146,46 +156,43 @@ export default function LoginPage() {
             </div>
 
             {/* Submit */}
-            <button
+            <motion.button
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
               type="submit"
-              className="btn btn-primary w-full py-2.5 text-sm font-semibold mt-2"
+              className="btn btn-primary w-full py-2.5 text-sm font-semibold mt-2 shadow-lg shadow-emerald-500/10 cursor-pointer text-zinc-900 bg-[var(--color-primary)] hover:bg-[var(--color-primary-light)] border-0"
               disabled={isLoading}
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
                   <span
-                    className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin"
+                    className="w-4 h-4 border-2 border-zinc-900/30 border-t-zinc-900 rounded-full animate-spin"
                   />
                   Signing in...
                 </span>
               ) : (
                 "Sign In"
               )}
-            </button>
+            </motion.button>
           </form>
 
           {/* Demo Credentials */}
           <div
-            className="mt-6 p-4 rounded-lg text-xs"
-            style={{
-              background: "rgba(16, 185, 129, 0.04)",
-              border: "1px solid rgba(16, 185, 129, 0.15)",
-            }}
+            className="mt-6 p-4 rounded-xl text-xs bg-emerald-950/10 border border-emerald-500/15"
           >
             <p
-              className="font-bold mb-2 flex items-center gap-1.5"
-              style={{ color: "var(--color-primary-light)" }}
+              className="font-bold mb-2 flex items-center gap-1.5 text-[var(--color-primary-light)]"
             >
               <Key className="w-3.5 h-3.5" /> Demo Credentials
             </p>
             <p className="text-zinc-400">
-              <strong>Admin:</strong> admin@agrisense.ai / Password123
+              <span className="font-semibold text-zinc-300">Admin:</span> admin@agrisense.ai / Password123
             </p>
             <p className="text-zinc-400 mt-1">
-              <strong>Farmer:</strong> ramesh@agrisense.ai / Password123
+              <span className="font-semibold text-zinc-300">Farmer:</span> ramesh@agrisense.ai / Password123
             </p>
           </div>
-        </div>
+        </motion.div>
 
         {/* Footer */}
         <p

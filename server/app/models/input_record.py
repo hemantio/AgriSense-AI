@@ -4,13 +4,13 @@ AgriSense AI — Input Record Model
 Tracks fertilizer and pesticide applications with OCR support.
 """
 
-import uuid
+import GUID
 from datetime import UTC, date, datetime
 
-from sqlalchemy import Date, DateTime, Float, ForeignKey, String, Text, Uuid
+from sqlalchemy import Date, DateTime, Float, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.database import Base
+from app.database import Base, GUID
 
 
 class InputRecord(Base):
@@ -18,16 +18,16 @@ class InputRecord(Base):
 
     __tablename__ = "input_records"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        Uuid,
+    id: Mapped[GUID.GUID] = mapped_column(
+        GUID,
         primary_key=True,
-        default=uuid.uuid4,
+        default=GUID.uuid4,
         index=True,
     )
 
     # --- Foreign Key ---
-    crop_id: Mapped[uuid.UUID] = mapped_column(
-        Uuid,
+    crop_id: Mapped[GUID.GUID] = mapped_column(
+        GUID,
         ForeignKey("crops.id", ondelete="CASCADE"),
         nullable=False,
         index=True,

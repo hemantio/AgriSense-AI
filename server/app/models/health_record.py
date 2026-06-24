@@ -4,13 +4,13 @@ AgriSense AI — Health Record Model
 Stores AI-analyzed crop health results with image references.
 """
 
-import uuid
+import GUID
 from datetime import UTC, datetime
 
-from sqlalchemy import DateTime, Float, ForeignKey, String, Text, Uuid
+from sqlalchemy import DateTime, Float, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.database import Base
+from app.database import Base, GUID
 
 
 class HealthRecord(Base):
@@ -18,22 +18,22 @@ class HealthRecord(Base):
 
     __tablename__ = "health_records"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        Uuid,
+    id: Mapped[GUID.GUID] = mapped_column(
+        GUID,
         primary_key=True,
-        default=uuid.uuid4,
+        default=GUID.uuid4,
         index=True,
     )
 
     # --- Foreign Key ---
-    plot_id: Mapped[uuid.UUID] = mapped_column(
-        Uuid,
+    plot_id: Mapped[GUID.GUID] = mapped_column(
+        GUID,
         ForeignKey("farm_plots.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
-    crop_id: Mapped[uuid.UUID | None] = mapped_column(
-        Uuid,
+    crop_id: Mapped[GUID.GUID | None] = mapped_column(
+        GUID,
         ForeignKey("crops.id", ondelete="SET NULL"),
         nullable=True,
         index=True,
