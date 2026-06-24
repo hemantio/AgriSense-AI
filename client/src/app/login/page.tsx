@@ -122,7 +122,7 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="input-field pl-10 border-zinc-800 focus:border-[var(--color-primary-light)] focus:shadow-[0_0_12px_rgba(52,211,153,0.15)] bg-zinc-950/80 rounded-lg text-white"
+                  className="input-field pl-10! border-zinc-800 focus:border-[var(--color-primary-light)] focus:shadow-[0_0_12px_rgba(52,211,153,0.15)] bg-zinc-950/80 rounded-lg text-white"
                   placeholder="ramesh@agrisense.ai"
                   required
                   autoComplete="email"
@@ -146,7 +146,7 @@ export default function LoginPage() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="input-field pl-10 border-zinc-800 focus:border-[var(--color-primary-light)] focus:shadow-[0_0_12px_rgba(52,211,153,0.15)] bg-zinc-950/80 rounded-lg text-white"
+                  className="input-field pl-10! border-zinc-800 focus:border-[var(--color-primary-light)] focus:shadow-[0_0_12px_rgba(52,211,153,0.15)] bg-zinc-950/80 rounded-lg text-white"
                   placeholder="••••••••"
                   required
                   autoComplete="current-password"
