@@ -68,3 +68,15 @@ lerna-debug.log*
 .antigravity/
 .brain/
 scratch/
+
+# Uploads (user-generated content)
+server/uploads/
+!server/uploads/.gitkeep
+
+# Database files
+*.sqlite3
+*.db
+
+# Docker volumes
+postgres_data/
+redis_data/
