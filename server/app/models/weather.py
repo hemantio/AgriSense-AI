@@ -4,13 +4,13 @@ AgriSense AI — Weather Data Model
 Stores weather data from OpenWeatherMap with alert classification.
 """
 
-import GUID
+import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import DateTime, Float, ForeignKey, String, Text
+from sqlalchemy import DateTime, Float, ForeignKey, String, Text, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.database import Base, GUID
+from app.database import Base
 
 
 class WeatherData(Base):
@@ -18,16 +18,16 @@ class WeatherData(Base):
 
     __tablename__ = "weather_data"
 
-    id: Mapped[GUID.GUID] = mapped_column(
-        GUID,
+    id: Mapped[uuid.UUID] = mapped_column(
+        Uuid,
         primary_key=True,
-        default=GUID.uuid4,
+        default=uuid.uuid4,
         index=True,
     )
 
     # --- Location Reference ---
-    plot_id: Mapped[GUID.GUID | None] = mapped_column(
-        GUID,
+    plot_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid,
         ForeignKey("farm_plots.id", ondelete="SET NULL"),
         nullable=True,
         index=True,

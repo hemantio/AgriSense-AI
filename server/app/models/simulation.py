@@ -4,13 +4,13 @@ AgriSense AI — Simulation Model
 Stores simulation scenarios and their generated results for demo/testing.
 """
 
-import GUID
+import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import DateTime, Float, String, Text
+from sqlalchemy import DateTime, Float, String, Text, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.database import Base, GUID
+from app.database import Base
 
 
 class Simulation(Base):
@@ -18,10 +18,10 @@ class Simulation(Base):
 
     __tablename__ = "simulations"
 
-    id: Mapped[GUID.GUID] = mapped_column(
-        GUID,
+    id: Mapped[uuid.UUID] = mapped_column(
+        Uuid,
         primary_key=True,
-        default=GUID.uuid4,
+        default=uuid.uuid4,
         index=True,
     )
 
@@ -58,11 +58,11 @@ class Simulation(Base):
     )  # "pending", "running", "completed", "failed"
 
     # --- Context ---
-    created_by: Mapped[GUID.GUID | None] = mapped_column(
-        GUID, nullable=True
+    created_by: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, nullable=True
     )
-    plot_id: Mapped[GUID.GUID | None] = mapped_column(
-        GUID, nullable=True
+    plot_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, nullable=True
     )
 
     # --- Audit ---

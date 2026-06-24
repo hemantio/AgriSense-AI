@@ -4,13 +4,13 @@ AgriSense AI — Crop Model
 Tracks crop lifecycle from sowing to harvest for each plot.
 """
 
-import GUID
+import uuid
 from datetime import UTC, date, datetime
 
-from sqlalchemy import Date, DateTime, ForeignKey, String, Text
+from sqlalchemy import Date, DateTime, ForeignKey, String, Text, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.database import Base, GUID
+from app.database import Base
 
 
 class Crop(Base):
@@ -18,16 +18,16 @@ class Crop(Base):
 
     __tablename__ = "crops"
 
-    id: Mapped[GUID.GUID] = mapped_column(
-        GUID,
+    id: Mapped[uuid.UUID] = mapped_column(
+        Uuid,
         primary_key=True,
-        default=GUID.uuid4,
+        default=uuid.uuid4,
         index=True,
     )
 
     # --- Foreign Key ---
-    plot_id: Mapped[GUID.GUID] = mapped_column(
-        GUID,
+    plot_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid,
         ForeignKey("farm_plots.id", ondelete="CASCADE"),
         nullable=False,
         index=True,

@@ -4,13 +4,13 @@ AgriSense AI — Expense Model
 Tracks farming expenses by category per crop.
 """
 
-import GUID
+import uuid
 from datetime import UTC, date, datetime
 
-from sqlalchemy import Date, DateTime, Float, ForeignKey, String, Text
+from sqlalchemy import Date, DateTime, Float, ForeignKey, String, Text, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.database import Base, GUID
+from app.database import Base
 
 
 class Expense(Base):
@@ -18,16 +18,16 @@ class Expense(Base):
 
     __tablename__ = "expenses"
 
-    id: Mapped[GUID.GUID] = mapped_column(
-        GUID,
+    id: Mapped[uuid.UUID] = mapped_column(
+        Uuid,
         primary_key=True,
-        default=GUID.uuid4,
+        default=uuid.uuid4,
         index=True,
     )
 
     # --- Foreign Key ---
-    crop_id: Mapped[GUID.GUID] = mapped_column(
-        GUID,
+    crop_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid,
         ForeignKey("crops.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
