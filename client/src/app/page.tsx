@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Brain, CloudSun, Map, LayoutDashboard, Volume2, FlaskConical, ArrowRight, Sprout } from "lucide-react";
+import { CloudSun, FlaskConical, ArrowRight, Sprout, Leaf, ScanText, Receipt } from "lucide-react";
 import BackgroundCanvas from "@/components/BackgroundCanvas";
 
 export default function HomePage() {
@@ -129,7 +129,7 @@ export default function HomePage() {
                 className="inline-block mr-3 md:mr-5 last:mr-0"
               >
                 {i === 2 || i === 3 ? (
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-300 to-pink-300">
+                  <span className="text-[var(--color-primary-light)]">
                     {word}
                   </span>
                 ) : (
@@ -182,50 +182,42 @@ export default function HomePage() {
         >
           {[
             {
-              icon: <Brain className="w-5 h-5 text-emerald-400" />,
-              title: "AI Crop Analysis",
+              icon: <Leaf className="w-5 h-5 text-emerald-400" aria-hidden="true" />,
+              title: "Crop Disease Scanner",
               description:
-                "Upload crop images for instant AI-powered health analysis with disease detection and treatment recommendations.",
+                "Upload crop images for AI-powered disease detection, severity analysis, and treatment recommendations.",
               color: "var(--color-primary)",
               borderClass: "glow-border-emerald",
             },
             {
-              icon: <CloudSun className="w-5 h-5 text-blue-400" />,
-              title: "Weather Intelligence",
+              icon: <CloudSun className="w-5 h-5 text-blue-400" aria-hidden="true" />,
+              title: "Micro-Climate Telemetry",
               description:
-                "Real-time weather data with smart alerts for rain, heat, drought, and frost — tailored to your farm location.",
+                "Real-time weather telemetry with automated alert classification for rain, heat, and frost.",
               color: "var(--color-info)",
               borderClass: "glow-border-emerald",
             },
             {
-              icon: <Map className="w-5 h-5 text-teal-400" />,
-              title: "Map-Based Plots",
+              icon: <ScanText className="w-5 h-5 text-teal-400" aria-hidden="true" />,
+              title: "AI Packaging OCR",
               description:
-                "Register and manage farm plots on interactive maps with GPS coordinates and area calculation.",
+                "Scan fertilizer and pesticide product labels to extract structured dosage, safety, and application guidance.",
               color: "var(--color-success)",
               borderClass: "glow-border-emerald",
             },
             {
-              icon: <LayoutDashboard className="w-5 h-5 text-pink-400" />,
-              title: "Smart Dashboard",
+              icon: <Receipt className="w-5 h-5 text-amber-400" aria-hidden="true" />,
+              title: "Expense & Log Tracking",
               description:
-                "Overview cards, seasonal summaries, expense tracking, and health reports at a glance.",
-              color: "var(--color-accent)",
-              borderClass: "glow-border-emerald",
-            },
-            {
-              icon: <Volume2 className="w-5 h-5 text-amber-400" />,
-              title: "Voice & Multilingual",
-              description:
-                "Text-to-speech recommendations and regional language support for accessibility.",
+                "Record farm inputs, labor costs, and seed expenses to view real-time category summaries and cost breakdowns.",
               color: "var(--color-warning)",
               borderClass: "glow-border-amber",
             },
             {
-              icon: <FlaskConical className="w-5 h-5 text-red-400" />,
+              icon: <FlaskConical className="w-5 h-5 text-red-400" aria-hidden="true" />,
               title: "Simulation Sandbox",
               description:
-                "Test with simulated weather, disease, and pest scenarios without real-world dependency.",
+                "Test your crop management plan with simulated weather disasters, disease outbreaks, and pest scenarios.",
               color: "var(--color-danger)",
               borderClass: "glow-border-rose",
             },
@@ -234,10 +226,11 @@ export default function HomePage() {
               key={index}
               variants={itemVariants}
               whileHover={{
-                y: -6,
-                transition: { type: "spring", stiffness: 300, damping: 10 },
+                y: -4,
+                scale: 1.03,
+                transition: { type: "spring", stiffness: 150, damping: 20 },
               }}
-              className={`glass-card p-6 border border-zinc-800/80 bg-zinc-900/40 backdrop-blur-xl group cursor-default transition-all duration-300 ${feature.borderClass}`}
+              className={`glass-card p-6 border border-zinc-800 bg-zinc-950/40 backdrop-blur-xl group cursor-default transition-all duration-300 hover:border-zinc-700 hover:bg-zinc-900/40 ${feature.borderClass}`}
             >
               <div
                 className="w-10 h-10 rounded-lg flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-105"

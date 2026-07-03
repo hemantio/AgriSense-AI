@@ -164,29 +164,29 @@ export const api = {
     }),
 
   // Farmers
-  listFarmers: (params?: Record<string, unknown>) =>
+  listFarmers: (params?: Record<string, any>) =>
     apiClient.get("/farmers", { params }),
 
-  createFarmer: (data: Record<string, unknown>) =>
+  createFarmer: (data: Record<string, any>) =>
     apiClient.post("/farmers", data),
 
   getFarmer: (id: string) => apiClient.get(`/farmers/${id}`),
 
-  updateFarmer: (id: string, data: Record<string, unknown>) =>
+  updateFarmer: (id: string, data: Record<string, any>) =>
     apiClient.put(`/farmers/${id}`, data),
 
   deleteFarmer: (id: string) => apiClient.delete(`/farmers/${id}`),
 
   // Plots
-  listPlots: (params?: Record<string, unknown>) =>
+  listPlots: (params?: Record<string, any>) =>
     apiClient.get("/plots", { params }),
 
-  createPlot: (data: Record<string, unknown>) =>
+  createPlot: (data: Record<string, any>) =>
     apiClient.post("/plots", data),
 
   getPlot: (id: string) => apiClient.get(`/plots/${id}`),
 
-  updatePlot: (id: string, data: Record<string, unknown>) =>
+  updatePlot: (id: string, data: Record<string, any>) =>
     apiClient.put(`/plots/${id}`, data),
 
   verifyPlot: (id: string, status: string) =>
@@ -200,64 +200,64 @@ export const api = {
       headers: { "Content-Type": "multipart/form-data" },
     }),
 
-  getHealthHistory: (params?: Record<string, unknown>) =>
+  getHealthHistory: (params?: Record<string, any>) =>
     apiClient.get("/health/history", { params }),
 
   getHealthRecord: (id: string) => apiClient.get(`/health/${id}`),
 
   // Crops
-  listCrops: (params?: Record<string, unknown>) =>
+  listCrops: (params?: Record<string, any>) =>
     apiClient.get("/crops", { params }),
 
-  createCrop: (data: Record<string, unknown>) =>
+  createCrop: (data: Record<string, any>) =>
     apiClient.post("/crops", data),
 
   getCrop: (id: string) => apiClient.get(`/crops/${id}`),
 
-  updateCrop: (id: string, data: Record<string, unknown>) =>
+  updateCrop: (id: string, data: Record<string, any>) =>
     apiClient.put(`/crops/${id}`, data),
 
   deleteCrop: (id: string) => apiClient.delete(`/crops/${id}`),
 
   // Expenses
-  listExpenses: (params?: Record<string, unknown>) =>
+  listExpenses: (params?: Record<string, any>) =>
     apiClient.get("/expenses", { params }),
 
-  createExpense: (data: Record<string, unknown>) =>
+  createExpense: (data: Record<string, any>) =>
     apiClient.post("/expenses", data),
 
   getExpense: (id: string) => apiClient.get(`/expenses/${id}`),
 
-  updateExpense: (id: string, data: Record<string, unknown>) =>
+  updateExpense: (id: string, data: Record<string, any>) =>
     apiClient.put(`/expenses/${id}`, data),
 
   deleteExpense: (id: string) => apiClient.delete(`/expenses/${id}`),
 
   // Weather & Recommendations
-  getWeather: (params?: Record<string, unknown>) =>
+  getWeather: (params?: Record<string, any>) =>
     apiClient.get("/weather", { params }),
 
-  getWeatherForecast: (params?: Record<string, unknown>) =>
+  getWeatherForecast: (params?: Record<string, any>) =>
     apiClient.get("/weather/forecast", { params }),
 
-  getRecommendations: (params?: Record<string, unknown>) =>
+  getRecommendations: (params?: Record<string, any>) =>
     apiClient.get("/recommendations", { params }),
 
   // Simulation
   listSimulations: () =>
     apiClient.get("/simulation/scenarios"),
 
-  runSimulation: (data: Record<string, unknown>) =>
+  runSimulation: (data: Record<string, any>) =>
     apiClient.post("/simulation/run", data),
 
-  getSimulationHistory: (params?: Record<string, unknown>) =>
+  getSimulationHistory: (params?: Record<string, any>) =>
     apiClient.get("/simulation/history", { params }),
 
   // Inputs & OCR
-  listInputs: (params?: Record<string, unknown>) =>
+  listInputs: (params?: Record<string, any>) =>
     apiClient.get("/inputs", { params }),
 
-  createInput: (data: Record<string, unknown>) =>
+  createInput: (data: Record<string, any>) =>
     apiClient.post("/inputs", data),
 
   uploadInputOCR: (formData: FormData) =>
