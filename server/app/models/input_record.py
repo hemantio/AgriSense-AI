@@ -5,25 +5,19 @@ Tracks fertilizer and pesticide applications with OCR support.
 """
 
 import uuid
-from datetime import UTC, date, datetime
+from datetime import date
 
-from sqlalchemy import Date, DateTime, Float, ForeignKey, String, Text, Uuid
+from sqlalchemy import Date, Float, ForeignKey, String, Text, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
+from app.models.mixins import SoftDeleteMixin, TimestampMixin, UUIDPrimaryKeyMixin
 
 
-class InputRecord(Base):
+class InputRecord(UUIDPrimaryKeyMixin, TimestampMixin, SoftDeleteMixin, Base):
     """Agricultural input (fertilizer/pesticide) tracking model."""
 
     __tablename__ = "input_records"
-
-    id: Mapped[uuid.UUID] = mapped_column(
-        Uuid,
-        primary_key=True,
-        default=uuid.uuid4,
-        index=True,
-    )
 
     # --- Foreign Key ---
     crop_id: Mapped[uuid.UUID] = mapped_column(
@@ -50,20 +44,6 @@ class InputRecord(Base):
     image_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
     ocr_extracted_text: Mapped[str | None] = mapped_column(Text, nullable=True)
     ocr_confidence: Mapped[float | None] = mapped_column(Float, nullable=True)
-
-    # --- Audit ---
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(UTC),
-        nullable=False,
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(UTC),
-        onupdate=lambda: datetime.now(UTC),
-        nullable=False,
-    )
-    is_deleted: Mapped[bool] = mapped_column(default=False, nullable=False)
 
     # --- Relationships ---
     crop = relationship("Crop", back_populates="input_records")

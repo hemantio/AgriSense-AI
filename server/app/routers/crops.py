@@ -1,18 +1,15 @@
 """
-AgriSense AI — Crops Router
-===============================
-Crop lifecycle management with RBAC-filtered access.
+AgriSense AI — Crops Router (Refactored)
+============================================
+Crop lifecycle management with Repository + DI + Domain Exceptions.
 """
 
-import math
+from fastapi import APIRouter, Depends, Query
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.database import get_db
-from app.models.crop import Crop
-from app.models.plot import FarmPlot
+from app.dependencies import get_crop_repository, get_plot_repository
+from app.exceptions import NotFoundError
+from app.repositories.crop_repository import CropRepository
+from app.repositories.plot_repository import PlotRepository
 from app.schemas.crop import (
     CropCreateRequest,
     CropListResponse,
@@ -32,30 +29,17 @@ async def list_crops(
     plot_id: str | None = Query(None),
     crop_stage: str | None = Query(None),
     current_user: dict = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    repo: CropRepository = Depends(get_crop_repository),
 ):
     """List crops with filtering. Farmers see only their own."""
-    query = select(Crop).join(FarmPlot).where(
-        Crop.is_deleted == False,  # noqa: E712
-        FarmPlot.is_deleted == False,  # noqa: E712
+    crops, total = await repo.list_for_user(
+        user_id=current_user["user_id"],
+        role=current_user["role"],
+        plot_id=plot_id,
+        crop_stage=crop_stage,
+        page=page,
+        page_size=page_size,
     )
-
-    if current_user["role"] == "farmer":
-        query = query.where(FarmPlot.farmer_id == current_user["user_id"])
-
-    if plot_id:
-        query = query.where(Crop.plot_id == plot_id)
-    if crop_stage:
-        query = query.where(Crop.crop_stage == crop_stage)
-
-    count_query = select(func.count()).select_from(query.subquery())
-    total = (await db.execute(count_query)).scalar() or 0
-
-    query = query.offset((page - 1) * page_size).limit(page_size)
-    query = query.order_by(Crop.created_at.desc())
-
-    result = await db.execute(query)
-    crops = result.scalars().all()
 
     return CropListResponse(
         crops=[CropResponse.model_validate(c) for c in crops],
@@ -69,22 +53,20 @@ async def list_crops(
 async def create_crop(
     body: CropCreateRequest,
     current_user: dict = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    crop_repo: CropRepository = Depends(get_crop_repository),
+    plot_repo: PlotRepository = Depends(get_plot_repository),
 ):
     """Register a new crop on a plot."""
     # Verify plot ownership
-    query = select(FarmPlot).where(
-        FarmPlot.id == body.plot_id,
-        FarmPlot.is_deleted == False,  # noqa: E712
+    plot = await plot_repo.get_for_user(
+        body.plot_id,
+        user_id=current_user["user_id"],
+        role=current_user["role"],
     )
-    if current_user["role"] == "farmer":
-        query = query.where(FarmPlot.farmer_id == current_user["user_id"])
+    if not plot:
+        raise NotFoundError("Plot", str(body.plot_id))
 
-    result = await db.execute(query)
-    if not result.scalar_one_or_none():
-        raise HTTPException(status_code=404, detail="Plot not found")
-
-    crop = Crop(
+    crop = await crop_repo.create(
         plot_id=body.plot_id,
         crop_name=body.crop_name,
         seed_variety=body.seed_variety,
@@ -94,8 +76,6 @@ async def create_crop(
         crop_stage=body.crop_stage,
         description=body.description,
     )
-    db.add(crop)
-    await db.flush()
 
     await log_action(
         action="create",
@@ -110,20 +90,16 @@ async def create_crop(
 async def get_crop(
     crop_id: str,
     current_user: dict = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    repo: CropRepository = Depends(get_crop_repository),
 ):
     """Get a specific crop's details."""
-    query = select(Crop).join(FarmPlot).where(
-        Crop.id == crop_id,
-        Crop.is_deleted == False,  # noqa: E712
+    crop = await repo.get_for_user(
+        crop_id,
+        user_id=current_user["user_id"],
+        role=current_user["role"],
     )
-    if current_user["role"] == "farmer":
-        query = query.where(FarmPlot.farmer_id == current_user["user_id"])
-
-    result = await db.execute(query)
-    crop = result.scalar_one_or_none()
     if not crop:
-        raise HTTPException(status_code=404, detail="Crop not found")
+        raise NotFoundError("Crop", crop_id)
     return crop
 
 
@@ -132,25 +108,21 @@ async def update_crop(
     crop_id: str,
     body: CropUpdateRequest,
     current_user: dict = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    repo: CropRepository = Depends(get_crop_repository),
 ):
     """Update a crop's details or stage."""
-    query = select(Crop).join(FarmPlot).where(
-        Crop.id == crop_id,
-        Crop.is_deleted == False,  # noqa: E712
+    crop = await repo.get_for_user(
+        crop_id,
+        user_id=current_user["user_id"],
+        role=current_user["role"],
     )
-    if current_user["role"] == "farmer":
-        query = query.where(FarmPlot.farmer_id == current_user["user_id"])
-
-    result = await db.execute(query)
-    crop = result.scalar_one_or_none()
     if not crop:
-        raise HTTPException(status_code=404, detail="Crop not found")
+        raise NotFoundError("Crop", crop_id)
 
     update_data = body.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         setattr(crop, field, value)
-    await db.flush()
+    await repo.db.flush()
 
     await log_action(
         action="update",
@@ -166,23 +138,19 @@ async def update_crop(
 async def delete_crop(
     crop_id: str,
     current_user: dict = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    repo: CropRepository = Depends(get_crop_repository),
 ):
     """Soft-delete a crop record."""
-    query = select(Crop).join(FarmPlot).where(
-        Crop.id == crop_id,
-        Crop.is_deleted == False,  # noqa: E712
+    crop = await repo.get_for_user(
+        crop_id,
+        user_id=current_user["user_id"],
+        role=current_user["role"],
     )
-    if current_user["role"] == "farmer":
-        query = query.where(FarmPlot.farmer_id == current_user["user_id"])
-
-    result = await db.execute(query)
-    crop = result.scalar_one_or_none()
     if not crop:
-        raise HTTPException(status_code=404, detail="Crop not found")
+        raise NotFoundError("Crop", crop_id)
 
     crop.is_deleted = True
-    await db.flush()
+    await repo.db.flush()
 
     await log_action(
         action="delete",

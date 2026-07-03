@@ -11,19 +11,17 @@ from sqlalchemy import DateTime, Float, ForeignKey, String, Text, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
+from app.models.mixins import SoftDeleteMixin, UUIDPrimaryKeyMixin
 
 
-class HealthRecord(Base):
-    """Crop health analysis record from AI image processing."""
+class HealthRecord(UUIDPrimaryKeyMixin, SoftDeleteMixin, Base):
+    """Crop health analysis record from AI image processing.
+
+    Note: Uses only UUIDPrimaryKeyMixin and SoftDeleteMixin (no TimestampMixin)
+    because this model has a dedicated upload_date and no updated_at column.
+    """
 
     __tablename__ = "health_records"
-
-    id: Mapped[uuid.UUID] = mapped_column(
-        Uuid,
-        primary_key=True,
-        default=uuid.uuid4,
-        index=True,
-    )
 
     # --- Foreign Key ---
     plot_id: Mapped[uuid.UUID] = mapped_column(
@@ -78,7 +76,6 @@ class HealthRecord(Base):
         default=lambda: datetime.now(UTC),
         nullable=False,
     )
-    is_deleted: Mapped[bool] = mapped_column(default=False, nullable=False)
 
     # --- Relationships ---
     plot = relationship("FarmPlot", back_populates="health_records")

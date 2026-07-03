@@ -1,19 +1,15 @@
 """
-AgriSense AI — Expenses Router
-==================================
-Expense tracking with category-wise summaries.
+AgriSense AI — Expenses Router (Refactored)
+===============================================
+Expense tracking with Repository + DI + Domain Exceptions.
 """
 
-import math
+from fastapi import APIRouter, Depends, Query
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.database import get_db
-from app.models.crop import Crop
-from app.models.expense import Expense
-from app.models.plot import FarmPlot
+from app.dependencies import get_crop_repository, get_expense_repository
+from app.exceptions import NotFoundError
+from app.repositories.crop_repository import CropRepository
+from app.repositories.expense_repository import ExpenseRepository
 from app.schemas.expense import (
     ExpenseCreateRequest,
     ExpenseListResponse,
@@ -34,67 +30,26 @@ async def list_expenses(
     crop_id: str | None = Query(None),
     category: str | None = Query(None),
     current_user: dict = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    repo: ExpenseRepository = Depends(get_expense_repository),
 ):
     """List expenses with filtering and category summary."""
-    query = (
-        select(Expense)
-        .join(Crop)
-        .join(FarmPlot)
-        .where(
-            Expense.is_deleted == False,  # noqa: E712
-            Crop.is_deleted == False,  # noqa: E712
-        )
+    expenses, total = await repo.list_for_user(
+        user_id=current_user["user_id"],
+        role=current_user["role"],
+        crop_id=crop_id,
+        category=category,
+        page=page,
+        page_size=page_size,
     )
-
-    if current_user["role"] == "farmer":
-        query = query.where(FarmPlot.farmer_id == current_user["user_id"])
-
-    if crop_id:
-        query = query.where(Expense.crop_id == crop_id)
-    if category:
-        query = query.where(Expense.category == category)
-
-    count_query = select(func.count()).select_from(query.subquery())
-    total = (await db.execute(count_query)).scalar() or 0
 
     # Get category summaries
-    summary_query = (
-        select(
-            Expense.category,
-            func.sum(Expense.amount).label("total_amount"),
-            func.count().label("count"),
-        )
-        .join(Crop)
-        .join(FarmPlot)
-        .where(
-            Expense.is_deleted == False,  # noqa: E712
-            Crop.is_deleted == False,  # noqa: E712
-        )
-        .group_by(Expense.category)
+    summary_data = await repo.get_category_summary(
+        user_id=current_user["user_id"],
+        role=current_user["role"],
+        crop_id=crop_id,
     )
-    if current_user["role"] == "farmer":
-        summary_query = summary_query.where(FarmPlot.farmer_id == current_user["user_id"])
-    if crop_id:
-        summary_query = summary_query.where(Expense.crop_id == crop_id)
-
-    summary_result = await db.execute(summary_query)
-    summaries = [
-        ExpenseSummaryResponse(
-            category=row.category,
-            total_amount=float(row.total_amount or 0),
-            count=row.count,
-        )
-        for row in summary_result.all()
-    ]
+    summaries = [ExpenseSummaryResponse(**s) for s in summary_data]
     grand_total = sum(s.total_amount for s in summaries)
-
-    # Paginate
-    query = query.offset((page - 1) * page_size).limit(page_size)
-    query = query.order_by(Expense.created_at.desc())
-
-    result = await db.execute(query)
-    expenses = result.scalars().all()
 
     return ExpenseListResponse(
         expenses=[ExpenseResponse.model_validate(e) for e in expenses],
@@ -110,22 +65,20 @@ async def list_expenses(
 async def create_expense(
     body: ExpenseCreateRequest,
     current_user: dict = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    expense_repo: ExpenseRepository = Depends(get_expense_repository),
+    crop_repo: CropRepository = Depends(get_crop_repository),
 ):
     """Record a new farming expense."""
     # Verify crop ownership
-    query = select(Crop).join(FarmPlot).where(
-        Crop.id == body.crop_id,
-        Crop.is_deleted == False,  # noqa: E712
+    crop = await crop_repo.get_for_user(
+        body.crop_id,
+        user_id=current_user["user_id"],
+        role=current_user["role"],
     )
-    if current_user["role"] == "farmer":
-        query = query.where(FarmPlot.farmer_id == current_user["user_id"])
+    if not crop:
+        raise NotFoundError("Crop", str(body.crop_id))
 
-    result = await db.execute(query)
-    if not result.scalar_one_or_none():
-        raise HTTPException(status_code=404, detail="Crop not found")
-
-    expense = Expense(
+    expense = await expense_repo.create(
         crop_id=body.crop_id,
         category=body.category,
         amount=body.amount,
@@ -134,8 +87,6 @@ async def create_expense(
         description=body.description,
         notes=body.notes,
     )
-    db.add(expense)
-    await db.flush()
 
     await log_action(
         action="create",
@@ -151,25 +102,16 @@ async def create_expense(
 async def get_expense(
     expense_id: str,
     current_user: dict = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    repo: ExpenseRepository = Depends(get_expense_repository),
 ):
     """Get a specific expense record."""
-    query = (
-        select(Expense)
-        .join(Crop)
-        .join(FarmPlot)
-        .where(
-            Expense.id == expense_id,
-            Expense.is_deleted == False,  # noqa: E712
-        )
+    expense = await repo.get_for_user(
+        expense_id,
+        user_id=current_user["user_id"],
+        role=current_user["role"],
     )
-    if current_user["role"] == "farmer":
-        query = query.where(FarmPlot.farmer_id == current_user["user_id"])
-
-    result = await db.execute(query)
-    expense = result.scalar_one_or_none()
     if not expense:
-        raise HTTPException(status_code=404, detail="Expense not found")
+        raise NotFoundError("Expense", expense_id)
     return expense
 
 
@@ -178,30 +120,21 @@ async def update_expense(
     expense_id: str,
     body: ExpenseUpdateRequest,
     current_user: dict = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    repo: ExpenseRepository = Depends(get_expense_repository),
 ):
     """Update an expense record."""
-    query = (
-        select(Expense)
-        .join(Crop)
-        .join(FarmPlot)
-        .where(
-            Expense.id == expense_id,
-            Expense.is_deleted == False,  # noqa: E712
-        )
+    expense = await repo.get_for_user(
+        expense_id,
+        user_id=current_user["user_id"],
+        role=current_user["role"],
     )
-    if current_user["role"] == "farmer":
-        query = query.where(FarmPlot.farmer_id == current_user["user_id"])
-
-    result = await db.execute(query)
-    expense = result.scalar_one_or_none()
     if not expense:
-        raise HTTPException(status_code=404, detail="Expense not found")
+        raise NotFoundError("Expense", expense_id)
 
     update_data = body.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         setattr(expense, field, value)
-    await db.flush()
+    await repo.db.flush()
 
     await log_action(
         action="update",
@@ -216,28 +149,19 @@ async def update_expense(
 async def delete_expense(
     expense_id: str,
     current_user: dict = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    repo: ExpenseRepository = Depends(get_expense_repository),
 ):
     """Soft-delete an expense record."""
-    query = (
-        select(Expense)
-        .join(Crop)
-        .join(FarmPlot)
-        .where(
-            Expense.id == expense_id,
-            Expense.is_deleted == False,  # noqa: E712
-        )
+    expense = await repo.get_for_user(
+        expense_id,
+        user_id=current_user["user_id"],
+        role=current_user["role"],
     )
-    if current_user["role"] == "farmer":
-        query = query.where(FarmPlot.farmer_id == current_user["user_id"])
-
-    result = await db.execute(query)
-    expense = result.scalar_one_or_none()
     if not expense:
-        raise HTTPException(status_code=404, detail="Expense not found")
+        raise NotFoundError("Expense", expense_id)
 
     expense.is_deleted = True
-    await db.flush()
+    await repo.db.flush()
 
     await log_action(
         action="delete",

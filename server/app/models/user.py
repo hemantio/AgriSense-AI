@@ -5,27 +5,19 @@ Represents Admin/Coordinator and Farmer accounts.
 Uses UUID primary keys to prevent enumeration attacks.
 """
 
-import uuid
-from datetime import UTC, datetime
+from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, String, Text, Uuid
+from sqlalchemy import Boolean, DateTime, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
+from app.models.mixins import SoftDeleteMixin, TimestampMixin, UUIDPrimaryKeyMixin
 
 
-class User(Base):
+class User(UUIDPrimaryKeyMixin, TimestampMixin, SoftDeleteMixin, Base):
     """User model for both Admin and Farmer roles."""
 
     __tablename__ = "users"
-
-    # --- Primary Key (UUID for security) ---
-    id: Mapped[uuid.UUID] = mapped_column(
-        Uuid,
-        primary_key=True,
-        default=uuid.uuid4,
-        index=True,
-    )
 
     # --- Authentication ---
     email: Mapped[str] = mapped_column(
@@ -55,25 +47,9 @@ class User(Base):
         Boolean, default=False, nullable=False
     )
 
-    # --- Audit Timestamps ---
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(UTC),
-        nullable=False,
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(UTC),
-        onupdate=lambda: datetime.now(UTC),
-        nullable=False,
-    )
+    # --- Extra Timestamps ---
     last_login_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
-    )
-
-    # --- Soft Delete ---
-    is_deleted: Mapped[bool] = mapped_column(
-        Boolean, default=False, nullable=False
     )
 
     # --- Relationships ---

@@ -79,6 +79,11 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str = ""
     GEMINI_MODEL: str = "gemini-2.0-flash"
 
+    # --- Google Cloud Platform (GCP) ---
+    GCP_PROJECT_ID: str = ""
+    GCP_LOCATION: str = "us-central1"
+    GCS_BUCKET_NAME: str = ""
+
     # --- Logging ---
     LOG_LEVEL: str = "INFO"
     LOG_FORMAT: Literal["json", "console"] = "console"

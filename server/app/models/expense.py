@@ -5,25 +5,19 @@ Tracks farming expenses by category per crop.
 """
 
 import uuid
-from datetime import UTC, date, datetime
+from datetime import date
 
-from sqlalchemy import Date, DateTime, Float, ForeignKey, String, Text, Uuid
+from sqlalchemy import Date, Float, ForeignKey, String, Text, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
+from app.models.mixins import SoftDeleteMixin, TimestampMixin, UUIDPrimaryKeyMixin
 
 
-class Expense(Base):
+class Expense(UUIDPrimaryKeyMixin, TimestampMixin, SoftDeleteMixin, Base):
     """Farming expense record tied to a specific crop."""
 
     __tablename__ = "expenses"
-
-    id: Mapped[uuid.UUID] = mapped_column(
-        Uuid,
-        primary_key=True,
-        default=uuid.uuid4,
-        index=True,
-    )
 
     # --- Foreign Key ---
     crop_id: Mapped[uuid.UUID] = mapped_column(
@@ -49,20 +43,6 @@ class Expense(Base):
     receipt_image_path: Mapped[str | None] = mapped_column(
         String(500), nullable=True
     )
-
-    # --- Audit ---
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(UTC),
-        nullable=False,
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(UTC),
-        onupdate=lambda: datetime.now(UTC),
-        nullable=False,
-    )
-    is_deleted: Mapped[bool] = mapped_column(default=False, nullable=False)
 
     # --- Relationships ---
     crop = relationship("Crop", back_populates="expenses")

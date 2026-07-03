@@ -12,6 +12,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.config import get_settings
 from app.database import close_db, init_db
+from app.exceptions import AgriSenseError
 from app.middleware.cors import setup_cors
 from app.middleware.rate_limit import setup_rate_limiting
 from app.middleware.security_headers import setup_security_headers
@@ -105,7 +106,24 @@ def create_app() -> FastAPI:
         name="uploads",
     )
 
-    # --- Global Exception Handler ---
+    # --- Domain Exception Handler ---
+    @app.exception_handler(AgriSenseError)
+    async def domain_exception_handler(request, exc: AgriSenseError):
+        """Handle typed domain exceptions with consistent JSON responses."""
+        logger = get_logger("agrisense.error")
+        logger.warning(
+            "Domain error",
+            error_code=exc.error_code,
+            detail=exc.message,
+            path=str(request.url),
+            method=request.method,
+        )
+        return JSONResponse(
+            status_code=exc.status_code,
+            content=exc.to_dict(),
+        )
+
+    # --- Global Catch-All Exception Handler ---
     @app.exception_handler(Exception)
     async def global_exception_handler(request, exc):
         """Catch-all exception handler — never expose stack traces."""

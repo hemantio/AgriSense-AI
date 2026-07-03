@@ -11,19 +11,17 @@ from sqlalchemy import DateTime, Float, ForeignKey, String, Text, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
+from app.models.mixins import UUIDPrimaryKeyMixin
 
 
-class WeatherData(Base):
-    """Weather data record for a specific location."""
+class WeatherData(UUIDPrimaryKeyMixin, Base):
+    """Weather data record for a specific location.
+
+    Note: Uses only UUIDPrimaryKeyMixin — weather records are
+    append-only snapshots with fetched_at instead of created_at/updated_at.
+    """
 
     __tablename__ = "weather_data"
-
-    id: Mapped[uuid.UUID] = mapped_column(
-        Uuid,
-        primary_key=True,
-        default=uuid.uuid4,
-        index=True,
-    )
 
     # --- Location Reference ---
     plot_id: Mapped[uuid.UUID | None] = mapped_column(

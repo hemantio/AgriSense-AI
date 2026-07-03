@@ -6,25 +6,19 @@ Supports map-based coordinates and admin verification.
 """
 
 import uuid
-from datetime import UTC, datetime
+from datetime import datetime
 
 from sqlalchemy import DateTime, Float, ForeignKey, String, Text, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
+from app.models.mixins import SoftDeleteMixin, TimestampMixin, UUIDPrimaryKeyMixin
 
 
-class FarmPlot(Base):
+class FarmPlot(UUIDPrimaryKeyMixin, TimestampMixin, SoftDeleteMixin, Base):
     """Farm plot model with geospatial data and verification workflow."""
 
     __tablename__ = "farm_plots"
-
-    id: Mapped[uuid.UUID] = mapped_column(
-        Uuid,
-        primary_key=True,
-        default=uuid.uuid4,
-        index=True,
-    )
 
     # --- Foreign Key ---
     farmer_id: Mapped[uuid.UUID] = mapped_column(
@@ -57,20 +51,6 @@ class FarmPlot(Base):
     verified_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
-
-    # --- Audit ---
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(UTC),
-        nullable=False,
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(UTC),
-        onupdate=lambda: datetime.now(UTC),
-        nullable=False,
-    )
-    is_deleted: Mapped[bool] = mapped_column(default=False, nullable=False)
 
     # --- Relationships ---
     farmer = relationship("User", back_populates="plots")

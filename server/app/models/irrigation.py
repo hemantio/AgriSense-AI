@@ -5,25 +5,19 @@ Tracks irrigation events with water usage estimation.
 """
 
 import uuid
-from datetime import UTC, date, datetime
+from datetime import date, datetime
 
 from sqlalchemy import Date, DateTime, Float, ForeignKey, String, Text, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
+from app.models.mixins import SoftDeleteMixin, TimestampMixin, UUIDPrimaryKeyMixin
 
 
-class IrrigationLog(Base):
+class IrrigationLog(UUIDPrimaryKeyMixin, TimestampMixin, SoftDeleteMixin, Base):
     """Irrigation event log for a farm plot."""
 
     __tablename__ = "irrigation_logs"
-
-    id: Mapped[uuid.UUID] = mapped_column(
-        Uuid,
-        primary_key=True,
-        default=uuid.uuid4,
-        index=True,
-    )
 
     # --- Foreign Key ---
     plot_id: Mapped[uuid.UUID] = mapped_column(
@@ -60,20 +54,6 @@ class IrrigationLog(Base):
     source: Mapped[str] = mapped_column(
         String(30), nullable=False, default="manual_entry"
     )  # "manual_entry", "iot_sensor", "simulation"
-
-    # --- Audit ---
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(UTC),
-        nullable=False,
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(UTC),
-        onupdate=lambda: datetime.now(UTC),
-        nullable=False,
-    )
-    is_deleted: Mapped[bool] = mapped_column(default=False, nullable=False)
 
     # --- Relationships ---
     plot = relationship("FarmPlot", back_populates="irrigation_logs")

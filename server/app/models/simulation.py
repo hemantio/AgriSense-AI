@@ -11,19 +11,17 @@ from sqlalchemy import DateTime, Float, String, Text, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
+from app.models.mixins import UUIDPrimaryKeyMixin
 
 
-class Simulation(Base):
-    """Simulation scenario record for demo and testing."""
+class Simulation(UUIDPrimaryKeyMixin, Base):
+    """Simulation scenario record for demo and testing.
+
+    Note: No TimestampMixin or SoftDeleteMixin — simulations are
+    append-only log records with their own created_at/completed_at lifecycle.
+    """
 
     __tablename__ = "simulations"
-
-    id: Mapped[uuid.UUID] = mapped_column(
-        Uuid,
-        primary_key=True,
-        default=uuid.uuid4,
-        index=True,
-    )
 
     # --- Scenario Configuration ---
     scenario_type: Mapped[str] = mapped_column(
