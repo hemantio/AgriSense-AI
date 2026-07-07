@@ -481,7 +481,7 @@ export default function SimulationPage() {
 
           {/* Result Card */}
           {simulationResult && (
-            <div className="glass-card p-6 border-l-4 border-l-amber-500 border-t border-r border-b border-zinc-800 bg-zinc-950/40 backdrop-blur-xl animate-fade-in">
+            <div className="glass-card p-6 border border-zinc-800 bg-zinc-950/40 backdrop-blur-xl animate-fade-in">
               <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider font-mono">Simulation Results</span>
               <h2 className="text-lg font-black text-white mt-1">
                 {simulationResult.scenario_name || "Completed Dry Run"}
@@ -532,7 +532,7 @@ export default function SimulationPage() {
                   <div className="space-y-3">
                     <span className="font-bold text-xs text-white block font-mono uppercase tracking-wider text-[10px]">Mitigation Protocol Advice:</span>
                     {simulationResult.recommendations.map((rec: any, idx: number) => (
-                      <div key={idx} className="p-4 bg-emerald-950/10 border border-emerald-500/25 rounded-xl text-xs text-zinc-400 leading-relaxed shadow-inner">
+                      <div key={idx} className="p-4 bg-emerald-950/10 border border-emerald-500/25 rounded-xl text-xs text-emerald-100 leading-relaxed shadow-inner">
                         <strong className="text-emerald-400 block mb-1 text-xs">💡 {rec.title} ({rec.priority} Priority)</strong>
                         {rec.message}
                       </div>

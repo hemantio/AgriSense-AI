@@ -45,7 +45,8 @@ async def generate_recommendations(
         Crop.is_deleted == False,  # noqa: E712
     )
     if current_user["role"] == "farmer":
-        query = query.where(FarmPlot.farmer_id == current_user["user_id"])
+        import uuid
+        query = query.where(FarmPlot.farmer_id == uuid.UUID(current_user["user_id"]))
 
     result = await db.execute(query)
     crop = result.scalar_one_or_none()

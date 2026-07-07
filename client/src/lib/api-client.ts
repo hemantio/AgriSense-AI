@@ -154,7 +154,7 @@ export const api = {
 
   getProfile: () => apiClient.get("/auth/me"),
 
-  updateProfile: (data: Record<string, unknown>) =>
+  updateProfile: (data: object) =>
     apiClient.put("/auth/me", data),
 
   changePassword: (currentPassword: string, newPassword: string) =>
@@ -257,8 +257,12 @@ export const api = {
   listInputs: (params?: Record<string, any>) =>
     apiClient.get("/inputs", { params }),
 
+  getInput: (id: string) => apiClient.get(`/inputs/${id}`),
+
   createInput: (data: Record<string, any>) =>
     apiClient.post("/inputs", data),
+
+  deleteInput: (id: string) => apiClient.delete(`/inputs/${id}`),
 
   uploadInputOCR: (formData: FormData) =>
     apiClient.post("/inputs/ocr", formData, {
@@ -267,5 +271,76 @@ export const api = {
 
   // Dashboard
   getDashboardStats: () => apiClient.get("/dashboard/stats"),
+
+  // CIE Chat
+  sendChat: (data: { message: string; session_id?: string | null; page_context?: string | null }) =>
+    apiClient.post("/chat/send", data),
+
+  sendChatStream: async (
+    data: { message: string; session_id?: string | null; page_context?: string | null },
+    onEvent: (event: { type: string; data: any }) => void
+  ) => {
+    const token = getAccessToken();
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      "Accept": "text/event-stream",
+    };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+    const response = await fetch(`${API_BASE_URL}/chat/send`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(data),
+    });
+
+    if (!response.body) {
+      throw new Error("No response body");
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+
+    try {
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+
+        let currentEvent = "";
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (trimmed.startsWith("event: ")) {
+            currentEvent = trimmed.slice(7);
+          } else if (trimmed.startsWith("data: ")) {
+            const dataStr = trimmed.slice(6);
+            try {
+              const eventData = JSON.parse(dataStr);
+              onEvent({ type: currentEvent, data: eventData });
+            } catch (err) {
+              console.error("Error parsing event data:", err);
+            }
+            currentEvent = "";
+          }
+        }
+      }
+    } finally {
+      reader.releaseLock();
+    }
+  },
+
+  closeSession: (session_id: string) =>
+    apiClient.post(`/chat/sessions/${session_id}/close`),
+
+  getChatSessions: () => apiClient.get("/chat/sessions"),
+
+  getChatHistory: (id: string) => apiClient.get(`/chat/sessions/${id}`),
+
+  submitFeedback: (data: { message_id: string; rating: number; was_helpful: boolean; correction?: string }) =>
+    apiClient.post("/chat/feedback", data),
 };
 

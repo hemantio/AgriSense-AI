@@ -92,7 +92,7 @@ export default function DashboardPage() {
     {
       label: "Critical Alerts",
       value: stats.critical_health_alerts,
-      icon: <AlertTriangle className="w-5 h-5 text-red-400 animate-bounce" />,
+      icon: <AlertTriangle className="w-5 h-5 text-red-400 animate-pulse-soft" />,
       color: "var(--color-danger)",
       bgColor: "rgba(239, 68, 68, 0.08)",
       borderClass: "glow-border-rose",
@@ -255,7 +255,7 @@ export default function DashboardPage() {
                   contentStyle={{
                     background: "rgba(10,10,12,0.95)",
                     border: "1px solid rgba(255,255,255,0.08)",
-                    borderRadius: "10px",
+                    borderRadius: "8px",
                     fontSize: "11px",
                     fontFamily: "monospace",
                     color: "#fff",

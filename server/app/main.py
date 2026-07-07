@@ -28,6 +28,7 @@ from app.routers import (
     recommendations,
     simulation,
     weather,
+    chat,
 )
 from app.utils.logger import get_logger, setup_logging
 
@@ -51,6 +52,16 @@ async def lifespan(app: FastAPI):
     if settings.DEBUG:
         await init_db()
         logger.info("Database tables initialized")
+
+    # Synchronize and seed CIE tools registry
+    try:
+        from app.database import async_session_factory
+        from app.services.ai.tool_registry import ToolRegistryService
+        async with async_session_factory() as session:
+            await ToolRegistryService.synchronize_registry(session)
+        logger.info("CIE Tool Registry synchronized successfully")
+    except Exception as e:
+        logger.error(f"Failed to synchronize CIE Tool Registry on startup: {str(e)}")
 
     yield
 
@@ -96,6 +107,7 @@ def create_app() -> FastAPI:
     app.include_router(simulation.router, prefix=api_prefix)
     app.include_router(recommendations.router, prefix=api_prefix)
     app.include_router(dashboard.router, prefix=api_prefix)
+    app.include_router(chat.router, prefix=api_prefix)
 
     # --- Static File Serving (uploads) ---
     import os

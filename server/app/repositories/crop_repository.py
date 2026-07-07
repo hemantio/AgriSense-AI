@@ -32,7 +32,7 @@ class CropRepository(BaseRepository[Crop]):
             )
         )
         if role == "farmer":
-            query = query.where(FarmPlot.farmer_id == user_id)
+            query = query.where(FarmPlot.farmer_id == (UUID(user_id) if isinstance(user_id, str) else user_id))
         return query
 
     async def list_for_user(
@@ -90,7 +90,7 @@ class CropRepository(BaseRepository[Crop]):
                 .where(
                     Crop.is_deleted == False,  # noqa: E712
                     Crop.crop_stage != "post-harvest",
-                    FarmPlot.farmer_id == user_id,
+                    FarmPlot.farmer_id == (UUID(user_id) if isinstance(user_id, str) else user_id),
                 )
             )
             return (await self.db.execute(query)).scalar() or 0

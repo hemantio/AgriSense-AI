@@ -48,7 +48,8 @@ async def get_dashboard_stats(
     - Farmer: sees only their own data
     """
     is_admin = current_user["role"] == "admin"
-    user_id = current_user["user_id"]
+    import uuid
+    user_id = uuid.UUID(current_user["user_id"])
 
     # --- Total Farmers (admin only) ---
     total_farmers = 0

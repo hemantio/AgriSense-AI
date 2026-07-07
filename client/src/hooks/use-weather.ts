@@ -1,12 +1,12 @@
 /**
- * AgriSense AI — Weather & Dashboard Hooks
- * =============================================
- * React Query hooks for weather data and dashboard stats.
+ * AgriSense AI — Weather Hooks
+ * ================================
+ * React Query hooks for weather data.
  */
 
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
-import type { DashboardStats, WeatherData } from "@/types";
+import type { WeatherData } from "@/types";
 
 /** Fetch current weather for a location. */
 export function useWeather(params?: { latitude?: number; longitude?: number }) {
@@ -32,12 +32,3 @@ export function useWeatherForecast(params?: {
   });
 }
 
-/** Fetch dashboard stats — auto-refreshes every 30 seconds. */
-export function useDashboardStats() {
-  return useQuery<DashboardStats>({
-    queryKey: ["dashboard", "stats"],
-    queryFn: () =>
-      api.getDashboardStats().then((r) => r.data as DashboardStats),
-    refetchInterval: 30 * 1000, // 30 second refresh
-  });
-}

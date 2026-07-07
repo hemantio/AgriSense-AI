@@ -39,9 +39,9 @@ class PlotRepository(BaseRepository[FarmPlot]):
         filters: list[Any] = []
 
         if role == "farmer":
-            filters.append(FarmPlot.farmer_id == user_id)
+            filters.append(FarmPlot.farmer_id == (UUID(user_id) if isinstance(user_id, str) else user_id))
         elif farmer_id:
-            filters.append(FarmPlot.farmer_id == farmer_id)
+            filters.append(FarmPlot.farmer_id == (UUID(farmer_id) if isinstance(farmer_id, str) else farmer_id))
 
         if verification_status:
             filters.append(FarmPlot.verification_status == verification_status)
@@ -58,7 +58,7 @@ class PlotRepository(BaseRepository[FarmPlot]):
         """Get a plot with ownership check for farmers."""
         query = self._base_query().where(FarmPlot.id == plot_id)
         if role == "farmer":
-            query = query.where(FarmPlot.farmer_id == user_id)
+            query = query.where(FarmPlot.farmer_id == (UUID(user_id) if isinstance(user_id, str) else user_id))
         result = await self.db.execute(query)
         return result.scalar_one_or_none()
 

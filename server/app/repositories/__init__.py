@@ -11,6 +11,8 @@ from app.repositories.crop_repository import CropRepository
 from app.repositories.expense_repository import ExpenseRepository
 from app.repositories.health_repository import HealthRepository
 from app.repositories.input_repository import InputRepository
+from app.repositories.irrigation_repository import IrrigationRepository
+from app.repositories.simulation_repository import SimulationRepository
 
 __all__ = [
     "BaseRepository",
@@ -20,4 +22,6 @@ __all__ = [
     "ExpenseRepository",
     "HealthRepository",
     "InputRepository",
+    "IrrigationRepository",
+    "SimulationRepository",
 ]

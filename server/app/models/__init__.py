@@ -14,6 +14,7 @@ from app.models.weather import WeatherData
 from app.models.expense import Expense
 from app.models.irrigation import IrrigationLog
 from app.models.simulation import Simulation
+from app.models.chat import ChatSession, ChatMessage, KnowledgeEmbedding, ChatFeedback, ToolRegistry
 
 __all__ = [
     # Mixins
@@ -30,4 +31,9 @@ __all__ = [
     "Expense",
     "IrrigationLog",
     "Simulation",
+    "ChatSession",
+    "ChatMessage",
+    "KnowledgeEmbedding",
+    "ChatFeedback",
+    "ToolRegistry",
 ]

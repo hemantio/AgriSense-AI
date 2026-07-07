@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth-store";
-import { clearTokens } from "@/lib/api-client";
-import { useEffect, useState } from "react";
+import { clearTokens, api } from "@/lib/api-client";
+import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Send, VolumeX, Search } from "lucide-react";
 import {
   LayoutDashboard,
   Users,
@@ -24,6 +25,10 @@ import {
   Mic,
   MessageSquare
 } from "lucide-react";
+import { CommandBar } from "@/components/CommandBar";
+import { ConfirmationCard } from "@/components/ConfirmationCard";
+import { MessageFeedback } from "@/components/MessageFeedback";
+import { toast } from "sonner";
 
 export default function DashboardLayout({
   children,
@@ -34,8 +39,49 @@ export default function DashboardLayout({
   const router = useRouter();
   const { user, isAuthenticated, logout } = useAuthStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  
+  // CIE Command Bar state
+  const [commandBarOpen, setCommandBarOpen] = useState(false);
+  
+  // CIE Chat and Speech states
   const [assistantOpen, setAssistantOpen] = useState(false);
   const [micActive, setMicActive] = useState(false);
+  const [messages, setMessages] = useState<Array<{
+    id?: string;
+    role: string;
+    content: string;
+    suggestions?: string[];
+    needs_confirmation?: boolean;
+    confirmation_data?: any;
+    tool_used?: string;
+  }>>([
+    { role: "assistant", content: "नमस्ते! मैं कृषि मित्र (Krishi Mitra) हूँ। मैं आपकी खेती-बाड़ी, मौसम, खाद और खर्चों को मैनेज करने में मदद कर सकता हूँ। पूछिए!" }
+  ]);
+  const [inputValue, setInputValue] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [recognition, setRecognition] = useState<any>(null);
+  const [ttsMuted, setTtsMuted] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Global hotkeys for Command Bar (Ctrl+K or /)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setCommandBarOpen((prev) => !prev);
+      } else if (
+        e.key === "/" &&
+        document.activeElement?.tagName !== "INPUT" &&
+        document.activeElement?.tagName !== "TEXTAREA"
+      ) {
+        e.preventDefault();
+        setCommandBarOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // Auth guard
   useEffect(() => {
@@ -48,6 +94,155 @@ export default function DashboardLayout({
     clearTokens();
     logout();
     router.push("/login");
+  };
+
+  // Speech Recognition initialization
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const rec = new SpeechRecognition();
+        rec.continuous = false;
+        rec.lang = "hi-IN"; // Default to Hindi
+        rec.interimResults = false;
+
+        rec.onresult = (event: any) => {
+          const transcript = event.results[0][0].transcript;
+          setInputValue(transcript);
+          handleSend(transcript);
+        };
+
+        rec.onerror = (event: any) => {
+          console.warn("Speech recognition warning/error:", event.error);
+          setMicActive(false);
+          if (event.error === "not-allowed") {
+            toast.error("Microphone access denied. Please allow microphone permission in your browser settings.");
+          } else if (event.error === "no-speech") {
+            toast.warning("No speech detected. Please try again.");
+          } else {
+            toast.error(`Speech recognition failed: ${event.error}`);
+          }
+        };
+
+        rec.onend = () => {
+          setMicActive(false);
+        };
+
+        setRecognition(rec);
+      }
+    }
+  }, []);
+
+  // Auto scroll to bottom of chat
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, assistantOpen]);
+
+  const toggleMic = () => {
+    if (!recognition) {
+      alert("Speech recognition is not supported in this browser. Please use Chrome.");
+      return;
+    }
+    if (micActive) {
+      recognition.stop();
+    } else {
+      try {
+        recognition.start();
+        setMicActive(true);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
+
+  const handleSend = async (textOverride?: string) => {
+    const text = textOverride !== undefined ? textOverride : inputValue;
+    if (!text.trim()) return;
+
+    setInputValue("");
+    setMessages(prev => [...prev, { role: "user", content: text }]);
+    setIsLoading(true);
+
+    try {
+      // Add empty assistant message that we will stream into
+      setMessages(prev => [...prev, { role: "assistant", content: "" }]);
+
+      await api.sendChatStream(
+        {
+          message: text,
+          session_id: sessionId,
+          page_context: pathname
+        },
+        (event) => {
+          if (event.type === "token") {
+            setMessages(prev => {
+              const updated = [...prev];
+              const last = updated[updated.length - 1];
+              if (last && last.role === "assistant") {
+                last.content += event.data.text;
+              }
+              return updated;
+            });
+          } else if (event.type === "done") {
+            const data = event.data;
+            if (data.session_id) {
+              setSessionId(data.session_id);
+            }
+            
+            let finalContent = "";
+            setMessages(prev => {
+              const updated = [...prev];
+              const last = updated[updated.length - 1];
+              if (last && last.role === "assistant") {
+                last.id = data.message_id;
+                last.suggestions = data.suggestions || [];
+                last.needs_confirmation = data.needs_confirmation;
+                last.confirmation_data = data.confirmation_data;
+                last.tool_used = data.tool_used;
+                finalContent = last.content;
+              }
+              return updated;
+            });
+
+            // TTS audio response read aloud if not muted
+            if (finalContent && !ttsMuted && "speechSynthesis" in window) {
+              window.speechSynthesis.cancel();
+              const utterance = new SpeechSynthesisUtterance(finalContent);
+              const voices = window.speechSynthesis.getVoices();
+              const hiVoice = voices.find(v => v.lang.startsWith("hi"));
+              if (hiVoice) utterance.voice = hiVoice;
+              utterance.lang = "hi-IN";
+              window.speechSynthesis.speak(utterance);
+            }
+
+            // Handle Client Navigation Actions
+            if (data.tool_used === "navigation_tool" && data.action_result?.navigate) {
+              const target = data.action_result.target_page;
+              const qps = data.action_result.query_params || {};
+              let routePath = `/dashboard/${target}`;
+              if (target === "dashboard") routePath = "/dashboard";
+              if (qps.plot_id) routePath += `?plot_id=${qps.plot_id}`;
+              router.push(routePath);
+            }
+          }
+        }
+      );
+
+    } catch (err) {
+      console.error("CIE Chat error:", err);
+      setMessages(prev => {
+        const updated = [...prev];
+        const last = updated[updated.length - 1];
+        if (last && last.role === "assistant" && !last.content) {
+          last.content = "नेटवर्क एरर। कृपया फिर से प्रयास करें।";
+        }
+        return updated;
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const adminNavItems = [
@@ -195,6 +390,15 @@ export default function DashboardLayout({
           </button>
 
           <div className="flex items-center gap-4">
+            <button
+              onClick={() => setCommandBarOpen(true)}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-zinc-800 bg-zinc-900/40 text-zinc-500 hover:text-zinc-300 hover:border-zinc-700 transition-all text-xs cursor-pointer"
+            >
+              <Search className="w-3.5 h-3.5" />
+              <span>Search or ask Krishi Mitra...</span>
+              <kbd className="bg-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded text-[10px] font-mono ml-2">⌘K</kbd>
+            </button>
+
             <span className="badge badge-success">
               {user?.role === "admin" ? "Admin Panel" : "Farmer Dashboard"}
             </span>
@@ -220,56 +424,146 @@ export default function DashboardLayout({
             <AnimatePresence>
               {assistantOpen && (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                  initial={{ opacity: 0, scale: 0.95, y: 15 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                  className="mb-3 w-80 p-5 rounded-2xl border border-zinc-800 bg-zinc-950/90 shadow-2xl backdrop-blur-xl flex flex-col gap-4"
+                  exit={{ opacity: 0, scale: 0.95, y: 15 }}
+                  className="mb-3 w-96 max-h-[500px] rounded-2xl border border-zinc-800 bg-zinc-950/90 shadow-2xl backdrop-blur-xl flex flex-col overflow-hidden"
                 >
-                  <div className="flex justify-between items-center border-b border-zinc-900 pb-2">
-                    <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-500 font-mono">
-                      🤖 AgriSense Co-Pilot
-                    </span>
-                    <button
-                      onClick={() => {
-                        setAssistantOpen(false);
-                        setMicActive(false);
-                      }}
-                      className="p-1 rounded hover:bg-zinc-900 text-zinc-400 hover:text-white"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
+                  {/* Header */}
+                  <div className="flex justify-between items-center border-b border-zinc-900 px-4 py-3 bg-zinc-950/40">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="text-xs font-bold tracking-wider text-zinc-300 font-mono">
+                        कृषि मित्र — Krishi Mitra AI
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => {
+                          setTtsMuted(!ttsMuted);
+                          if (!ttsMuted && "speechSynthesis" in window) {
+                            window.speechSynthesis.cancel();
+                          }
+                        }}
+                        title={ttsMuted ? "Unmute Assistant Voice" : "Mute Assistant Voice"}
+                        className={`p-1.5 rounded hover:bg-zinc-900 transition-colors cursor-pointer ${
+                          ttsMuted ? "text-zinc-500" : "text-emerald-400"
+                        }`}
+                      >
+                        {ttsMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setAssistantOpen(false);
+                          setMicActive(false);
+                          if (recognition) recognition.stop();
+                        }}
+                        className="p-1.5 rounded hover:bg-zinc-900 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="flex flex-col items-center justify-center py-4 bg-black/40 rounded-xl border border-zinc-900/60 min-h-24">
-                    {micActive ? (
-                      <div className="flex items-end justify-center gap-1 h-8">
-                        {[0.2, 0.5, 0.8, 0.4, 0.7, 0.3].map((delay, index) => (
+                  {/* Messages Area */}
+                  <div className="flex-1 p-4 overflow-y-auto space-y-3 min-h-[220px] max-h-[300px]">
+                    {messages.map((msg, index) => (
+                      <div
+                        key={index}
+                        className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start"} w-full`}
+                      >
+                        {msg.content && (
                           <div
-                            key={index}
-                            className="w-1 bg-[var(--color-primary-light)] rounded-full wave-bar"
-                            style={{ animationDelay: `${delay}s` }}
-                          />
-                        ))}
-                      </div>
-                    ) : (
-                      <Volume2 className="w-8 h-8 text-zinc-600 animate-pulse" />
-                    )}
+                            className={`px-3 py-2 rounded-xl text-xs max-w-[85%] leading-relaxed ${
+                              msg.role === "user"
+                                ? "bg-emerald-900/40 text-emerald-100 border border-emerald-800/30 rounded-tr-none"
+                                : "bg-zinc-900/60 text-zinc-200 border border-zinc-800/40 rounded-tl-none"
+                            }`}
+                          >
+                            <p className="whitespace-pre-line">{msg.content}</p>
+                          </div>
+                        )}
 
-                    <p className="text-xs font-mono mt-3 text-center text-zinc-300">
-                      {micActive ? "Listening to telemetry audio..." : "AgriSense AI listening channel offline."}
-                    </p>
+                        {/* Confirmation Card Inline */}
+                        {msg.role === "assistant" && msg.needs_confirmation && msg.confirmation_data && (
+                          <div className="w-80 mt-1 max-w-[90%]">
+                            <ConfirmationCard
+                              tool={msg.confirmation_data.tool}
+                              params={msg.confirmation_data.params}
+                              onConfirm={() => handleSend("Haan")}
+                              onCancel={() => handleSend("Cancel")}
+                            />
+                          </div>
+                        )}
+
+                        {/* Message Feedback Loop */}
+                        {msg.role === "assistant" && msg.id && (
+                          <MessageFeedback messageId={msg.id} />
+                        )}
+
+                        {/* Suggestion Chips */}
+                        {msg.role === "assistant" && msg.suggestions && msg.suggestions.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mt-2 max-w-[90%]">
+                            {msg.suggestions.map((suggestion, idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => handleSend(suggestion)}
+                                className="text-[10px] bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 px-2.5 py-1 rounded-full transition-all duration-200 cursor-pointer"
+                              >
+                                {suggestion}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+
+                    {/* Loader */}
+                    {isLoading && (
+                      <div className="flex items-center gap-2 text-zinc-500 font-mono text-[10px] pl-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                        Krishi Mitra is thinking...
+                      </div>
+                    )}
+                    <div ref={chatEndRef} />
                   </div>
 
-                  <div className="flex flex-col gap-2">
+                  {/* Input Box */}
+                  <div className="p-3 border-t border-zinc-900 bg-zinc-950/60 flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleSend();
+                      }}
+                      placeholder="पूछिए... (e.g. आज बारिश होगी?)"
+                      className="flex-1 bg-zinc-900 border border-zinc-800 text-zinc-100 placeholder-zinc-500 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-emerald-500 transition-colors"
+                      disabled={isLoading}
+                    />
+
+                    {/* Microphone Pulse Animation while listening */}
                     <button
-                      onClick={() => setMicActive(!micActive)}
-                      className={`btn w-full text-xs font-semibold py-2 cursor-pointer ${
+                      onClick={toggleMic}
+                      className={`p-2 rounded-xl border transition-all duration-300 cursor-pointer flex items-center justify-center relative overflow-hidden ${
                         micActive
-                          ? "btn-secondary text-zinc-300 border-zinc-800 hover:border-zinc-700 bg-red-950/10"
-                          : "btn-primary text-zinc-900 bg-[var(--color-primary)] hover:bg-[var(--color-primary-light)] border-0"
+                          ? "bg-red-950/40 border-red-500/50 text-red-400"
+                          : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-zinc-200"
                       }`}
+                      title={micActive ? "Stop listening" : "Start voice command"}
                     >
-                      {micActive ? "⏹️ Mute Listening" : "🎤 Turn On Voice Mic"}
+                      {micActive && (
+                        <span className="absolute inset-0 bg-red-500/10 animate-ping rounded-xl" />
+                      )}
+                      <Mic className={`w-4 h-4 ${micActive ? "animate-pulse text-red-400" : ""}`} />
+                    </button>
+
+                    <button
+                      onClick={() => handleSend()}
+                      disabled={isLoading || !inputValue.trim()}
+                      className="p-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-900 disabled:opacity-40 disabled:hover:bg-emerald-500 transition-all cursor-pointer flex items-center justify-center"
+                    >
+                      <Send className="w-4 h-4" />
                     </button>
                   </div>
                 </motion.div>
@@ -303,15 +597,21 @@ export default function DashboardLayout({
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
-                className={`w-3 h-3 rounded-full ${micActive ? "bg-red-400" : "bg-[var(--color-primary-light)]"}`}
+                className={`w-3 h-3 rounded-full ${micActive ? "bg-red-400 animate-pulse" : "bg-[var(--color-primary-light)]"}`}
               />
               <span className="text-xs font-semibold text-[var(--text-primary)]">
-                {assistantOpen ? "Close Assistant" : "AgriSense AI Assistant"}
+                {assistantOpen ? "Close Co-Pilot" : "कृषि मित्र (Krishi Mitra) Co-Pilot"}
               </span>
             </motion.div>
           </div>
         </main>
       </div>
+
+      <CommandBar
+        isOpen={commandBarOpen}
+        onClose={() => setCommandBarOpen(false)}
+        pageContext={pathname}
+      />
     </div>
   );
 }

@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // --- Allowed Dev Origins for Network Development ---
+  allowedDevOrigins: ["192.168.0.106", "localhost", "192.168.0.106:3000", "localhost:3000"],
+
   // --- Security Headers ---
   async headers() {
     return [

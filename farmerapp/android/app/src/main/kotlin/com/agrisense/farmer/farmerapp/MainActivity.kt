@@ -1,0 +1,5 @@
+package com.agrisense.farmer.farmerapp
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity : FlutterActivity()

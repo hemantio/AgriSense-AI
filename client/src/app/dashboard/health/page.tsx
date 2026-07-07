@@ -47,7 +47,7 @@ export default function HealthPage() {
     setIsLoading(true);
     try {
       const response = await api.getHealthHistory();
-      setHistory(response.data.history || response.data || []);
+      setHistory(response.data.records || response.data.history || (Array.isArray(response.data) ? response.data : []));
     } catch (error) {
       console.error("Error fetching health history:", error);
     } finally {
@@ -243,7 +243,7 @@ export default function HealthPage() {
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.98, opacity: 0 }}
                 transition={{ type: "spring", stiffness: 100, damping: 15 }}
-                className="glass-card p-6 border-l-4 border-l-emerald-500 border-t border-r border-b border-zinc-800/80 bg-zinc-950/40 backdrop-blur-xl overflow-hidden"
+                className="glass-card p-6 border border-zinc-800/80 bg-zinc-950/40 backdrop-blur-xl overflow-hidden"
               >
               <div className="flex justify-between items-start mb-4">
                 <div>
@@ -270,13 +270,13 @@ export default function HealthPage() {
                 )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 rounded-xl bg-emerald-950/10 border border-emerald-500/20 text-xs text-zinc-400 leading-relaxed shadow-inner">
+                  <div className="p-4 rounded-xl bg-emerald-950/10 border border-emerald-500/20 text-xs text-emerald-100 leading-relaxed shadow-inner">
                     <span className="font-bold text-emerald-400 block mb-2 text-xs flex items-center gap-1.5">
                       <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Organic Treatments
                     </span>
                     <p className="whitespace-pre-line">{activeAnalysis.organic_treatment || "No organic treatments listed."}</p>
                   </div>
-                  <div className="p-4 rounded-xl bg-orange-950/10 border border-orange-500/20 text-xs text-zinc-400 leading-relaxed shadow-inner">
+                  <div className="p-4 rounded-xl bg-orange-950/10 border border-orange-500/20 text-xs text-orange-100 leading-relaxed shadow-inner">
                     <span className="font-bold text-orange-400 block mb-2 text-xs flex items-center gap-1.5">
                       <ShieldAlert className="w-4 h-4 text-orange-400" /> Chemical Treatment Guidelines
                     </span>

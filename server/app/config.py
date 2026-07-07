@@ -79,6 +79,12 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str = ""
     GEMINI_MODEL: str = "gemini-2.0-flash"
 
+    # --- CIE (Conversational Intelligence Engine) ---
+    CIE_PROMPT_VERSION: str = "v1.0"
+    CIE_SESSION_TIMEOUT_MINUTES: int = 30
+    CIE_MAX_CLARIFICATION_ROUNDS: int = 2
+    CIE_MAX_MESSAGES_CONTEXT: int = 10
+
     # --- Google Cloud Platform (GCP) ---
     GCP_PROJECT_ID: str = ""
     GCP_LOCATION: str = "us-central1"
