@@ -43,7 +43,8 @@ async def list_inputs(
     )
 
     if current_user["role"] == "farmer":
-        query = query.where(FarmPlot.farmer_id == current_user["user_id"])
+        import uuid
+        query = query.where(FarmPlot.farmer_id == uuid.UUID(current_user["user_id"]))
     if crop_id:
         query = query.where(InputRecord.crop_id == crop_id)
     if input_type:
@@ -108,7 +109,8 @@ async def create_input_record(
         Crop.is_deleted == False,  # noqa: E712
     )
     if current_user["role"] == "farmer":
-        query = query.where(FarmPlot.farmer_id == current_user["user_id"])
+        import uuid
+        query = query.where(FarmPlot.farmer_id == uuid.UUID(current_user["user_id"]))
 
     result = await db.execute(query)
     if not result.scalar_one_or_none():
@@ -197,7 +199,8 @@ async def delete_input(
         )
     )
     if current_user["role"] == "farmer":
-        query = query.where(FarmPlot.farmer_id == current_user["user_id"])
+        import uuid
+        query = query.where(FarmPlot.farmer_id == uuid.UUID(current_user["user_id"]))
 
     result = await db.execute(query)
     record = result.scalar_one_or_none()

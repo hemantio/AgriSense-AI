@@ -99,8 +99,9 @@ async def get_simulation_history(
     """Get past simulation runs."""
     from sqlalchemy import func
 
+    import uuid
     query = select(Simulation).where(
-        Simulation.created_by == current_user["user_id"]
+        Simulation.created_by == uuid.UUID(current_user["user_id"])
     )
 
     if scenario_type:

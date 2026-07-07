@@ -38,7 +38,8 @@ async def analyze_crop_health(
         FarmPlot.is_deleted == False,  # noqa: E712
     )
     if current_user["role"] == "farmer":
-        query = query.where(FarmPlot.farmer_id == current_user["user_id"])
+        import uuid
+        query = query.where(FarmPlot.farmer_id == uuid.UUID(current_user["user_id"]))
 
     result = await db.execute(query)
     plot = result.scalar_one_or_none()
@@ -91,8 +92,9 @@ async def get_health_history(
 
     # Farmers: filter by their own plots
     if current_user["role"] == "farmer":
+        import uuid
         query = query.join(FarmPlot).where(
-            FarmPlot.farmer_id == current_user["user_id"]
+            FarmPlot.farmer_id == uuid.UUID(current_user["user_id"])
         )
 
     count_query = select(func.count()).select_from(query.subquery())
@@ -125,8 +127,9 @@ async def get_health_record(
     )
 
     if current_user["role"] == "farmer":
+        import uuid
         query = query.join(FarmPlot).where(
-            FarmPlot.farmer_id == current_user["user_id"]
+            FarmPlot.farmer_id == uuid.UUID(current_user["user_id"])
         )
 
     result = await db.execute(query)
