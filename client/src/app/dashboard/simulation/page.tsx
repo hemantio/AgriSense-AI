@@ -74,7 +74,7 @@ export default function SimulationPage() {
         api.getSimulationHistory(),
         api.listPlots(),
       ]);
-      setHistory(histRes.data.history || histRes.data || []);
+      setHistory(histRes.data.simulations || histRes.data.history || []);
       setPlots(plotsRes.data.plots || []);
     } catch (error) {
       console.error("Error fetching simulation info:", error);

@@ -11,6 +11,7 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 import json
+import uuid
 
 from app.database import get_db
 from app.models.simulation import Simulation
@@ -67,8 +68,8 @@ async def run_simulation(
         ai_response=json.dumps(result.get("recommendations", [])),
         alerts_generated=json.dumps(result.get("alerts", [])),
         status="completed",
-        created_by=current_user["user_id"],
-        plot_id=body.plot_id,
+        created_by=uuid.UUID(current_user["user_id"]),
+        plot_id=uuid.UUID(body.plot_id) if body.plot_id else None,
         completed_at=datetime.now(UTC),
     )
     db.add(sim_record)
