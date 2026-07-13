@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriSense AI — Intelligent Farm Management & Decision Support</title>
+  <meta name="description" content="Empower your farm with AgriSense AI. Digitize farm plots, analyze crop health, track agricultural inputs with OCR, and receive location-specific weather alerts and voice recommendations.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Starscape Background -->
+  <canvas id="starscape"></canvas>
+
+  <!-- Background Orbs -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+  </div>
+
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-content">
+      <div class="loader-logo">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+          <path d="M2 22c1.25-3.33 3.58-6 7-8m0 0c3.42-2 6.75-2 10-2M9 14c-1.33-2.67-1-6.33 1-11M9 14c2.25 1.5 4.5 3 7 3"/>
+        </svg>
+        Agri<span>Sense AI</span>
+      </div>
+      <p class="loader-text">Loading Farm Assets</p>
+      <div class="loader-bar-track">
+        <div class="loader-bar-fill" id="loaderBar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll Progress Bar -->
+  <div id="scrollProgress"></div>
+
+  <!-- Navbar -->
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+          <path d="M2 22c1.25-3.33 3.58-6 7-8m0 0c3.42-2 6.75-2 10-2M9 14c-1.33-2.67-1-6.33 1-11M9 14c2.25 1.5 4.5 3 7 3"/>
+        </svg>
+        Agri<span>Sense AI</span>
+      </a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#specs">Metrics</a>
+        <a href="#testimonials">Testimonials</a>
+        <a href="#cta" class="nav-cta">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="hero">
+    <div class="grid-overlay"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">Intelligent Farming.<br><span>Empowered by AI.</span></h1>
+      <p class="hero-subtitle">
+        AgriSense AI is a cloud-enabled decision support platform designed for small-scale farmers and coordinators. Manage your plots, track inputs, analyze crop health, and receive smart recommendations.
+      </p>
+      <div class="hero-buttons">
+        <a href="#cta" class="btn-primary">Register Now</a>
+        <a href="#features" class="btn-secondary">Explore Features</a>
+      </div>
+      <div class="scroll-hint">
+        <span>Scroll to Explore</span>
+        <div class="scroll-arrow"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scroll Animation Canvas Section -->
+  <section class="scroll-animation">
+    <div class="scroll-sticky">
+      <canvas id="frameCanvas"></canvas>
+
+      <!-- Annotation Cards -->
+      <div class="annotation-card" data-show="0.12" data-hide="0.32">
+        <div class="card-number">01 / DIGITAL LAND MAPPING</div>
+        <div class="card-body">
+          <h3 class="card-title">Plot Registration</h3>
+          <p class="card-desc">
+            Mark and verify farm boundaries on our interactive coordinate mapping tool to build your digital farm profile.
+          </p>
+          <div class="card-stat">
+            <span class="card-stat-number">100%</span>
+            <span class="card-stat-label">Boundary Tracking</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="annotation-card" data-show="0.45" data-hide="0.65">
+        <div class="card-number">02 / HEALTH DIAGNOSIS</div>
+        <div class="card-body">
+          <h3 class="card-title">AI Crop Monitoring</h3>
+          <p class="card-desc">
+            Upload leaf photos to instantly detect pests, nutrient deficiencies, and plant diseases using advanced computer vision.
+          </p>
+          <div class="card-stat">
+            <span class="card-stat-number">95%+</span>
+            <span class="card-stat-label">Detection Accuracy</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="annotation-card" data-show="0.75" data-hide="0.92">
+        <div class="card-number">03 / INVENTORY LOGGING</div>
+        <div class="card-body">
+          <h3 class="card-title">Smart Input OCR</h3>
+          <p class="card-desc">
+            Snap photos of fertilizer or pesticide packets. Our OCR reads labels instantly and creates structured log records.
+          </p>
+          <div class="card-stat">
+            <span class="card-stat-number">1.2s</span>
+            <span class="card-stat-label">Label Processing</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Specs Section -->
+  <section id="specs">
+    <div class="specs-grid">
+      <div class="spec-item" data-target="95.4" data-suffix="%">
+        <span class="spec-number">0</span>
+        <span class="spec-label">Crop Disease Accuracy</span>
+      </div>
+      <div class="spec-item" data-target="4.8" data-suffix="/5">
+        <span class="spec-number">0</span>
+        <span class="spec-label">Farmer Satisfaction</span>
+      </div>
+      <div class="spec-item" data-target="15" data-suffix="">
+        <span class="spec-number">0</span>
+        <span class="spec-label">Regional Languages</span>
+      </div>
+      <div class="spec-item" data-target="12" data-suffix="">
+        <span class="spec-number">0</span>
+        <span class="spec-label">Farming Metrics Tracked</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features">
+    <div class="section-header">
+      <h2 class="section-title">Core Platform Features</h2>
+      <p class="section-subtitle">A set of professional-grade tools built into a beautiful, fluid interface.</p>
+    </div>
+    <div class="features-grid">
+      <!-- Feature 1 -->
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"/>
+            <line x1="8" y1="16" x2="8" y2="21"/>
+            <line x1="12" y1="18" x2="12" y2="23"/>
+            <line x1="16" y1="16" x2="16" y2="21"/>
+          </svg>
+        </div>
+        <h3>Weather Intelligence</h3>
+        <p>Get real-time location-specific rain forecasts, temperature, humidity, and heatwave alerts to coordinate irrigation schedules.</p>
+      </div>
+      <!-- Feature 2 -->
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/>
+          </svg>
+        </div>
+        <h3>Multilingual & Voice</h3>
+        <p>Spoken recommendations and translation support in English and multiple regional languages for low-literacy users.</p>
+      </div>
+      <!-- Feature 3 -->
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2"/>
+            <line x1="12" y1="4" x2="12" y2="20"/>
+            <line x1="2" y1="12" x2="22" y2="12"/>
+          </svg>
+        </div>
+        <h3>Expense Management</h3>
+        <p>Track seed, fertilizer, pesticide, and labor expenses per crop, and see visual summaries for smart budgeting.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Digital Twin Control Center -->
+  <section id="digital-twin">
+    <div class="section-header">
+      <h2 class="section-title">Farmland Awakening Narrative</h2>
+      <p class="section-subtitle">Experience how AgriSense AI transforms reactive farming into proactive, data-driven agricultural intelligence.</p>
+    </div>
+    <div class="twin-container">
+      <!-- Tabs on the left -->
+      <div class="twin-tabs">
+        <button class="twin-tab-btn active" onclick="switchTwinPhase(1)">
+          <span class="tab-num">01</span>
+          <span class="tab-label">Pure Land</span>
+        </button>
+        <button class="twin-tab-btn" onclick="switchTwinPhase(2)">
+          <span class="tab-num">02</span>
+          <span class="tab-label">Weather Systems</span>
+        </button>
+        <button class="twin-tab-btn" onclick="switchTwinPhase(3)">
+          <span class="tab-num">03</span>
+          <span class="tab-label">Crop Health Reveal</span>
+        </button>
+        <button class="twin-tab-btn" onclick="switchTwinPhase(4)">
+          <span class="tab-num">04</span>
+          <span class="tab-label">AI Analysis Scan</span>
+        </button>
+        <button class="twin-tab-btn" onclick="switchTwinPhase(5)">
+          <span class="tab-num">05</span>
+          <span class="tab-label">Recommendations</span>
+        </button>
+        <button class="twin-tab-btn" onclick="switchTwinPhase(6)">
+          <span class="tab-num">06</span>
+          <span class="tab-label">Ecosystem Network</span>
+        </button>
+      </div>
+      
+      <!-- Visual Display on the right -->
+      <div class="twin-display">
+        <div class="twin-frame">
+          <img id="twinImage" src="assets/phase1.png" alt="Farmland Transformation Phase" style="transition: opacity 0.2s ease;">
+          <div class="twin-hud" id="twinHud">
+            <div class="twin-scanner"></div>
+            <svg id="hudSvg" viewBox="0 0 1000 600" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%; position:absolute; inset:0; pointer-events:none; z-index:5;">
+              <!-- Radar Sweep Circles (Phase 2, 4) -->
+              <g class="hud-layer hud-weather-layer">
+                <circle cx="500" cy="300" r="180" stroke="rgba(16, 185, 129, 0.15)" stroke-width="1.5"/>
+                <circle cx="500" cy="300" r="100" stroke="rgba(16, 185, 129, 0.08)" stroke-width="1"/>
+                <circle cx="500" cy="300" r="250" stroke="rgba(16, 185, 129, 0.05)" stroke-dasharray="8, 12" stroke-width="1.5"/>
+              </g>
+
+              <!-- Scanning Laser Line & Bounding Boxes (Phase 4) -->
+              <g class="hud-layer hud-scan-layer">
+                <line x1="200" y1="300" x2="800" y2="300" stroke="url(#laser-gradient)" stroke-width="2.5" class="scan-line"/>
+                <rect x="420" y="220" width="80" height="80" rx="4" stroke="var(--accent-light)" stroke-width="1.5" stroke-dasharray="4, 4" class="crop-box-1"/>
+                <rect x="530" y="310" width="100" height="90" rx="4" stroke="var(--accent-light)" stroke-width="1.5" stroke-dasharray="4, 4" class="crop-box-2"/>
+              </g>
+
+              <!-- Recommendations Labels (Phase 5) -->
+              <g class="hud-layer hud-recs-layer">
+                <g transform="translate(420, 180)" class="hud-label-group">
+                  <rect x="0" y="0" width="140" height="30" rx="6" fill="rgba(6, 9, 7, 0.85)" stroke="var(--accent)" stroke-width="1"/>
+                  <text x="10" y="18" fill="var(--accent-light)" font-family="monospace" font-size="10" letter-spacing="0.5">IRRIGATE: +20% YLD</text>
+                </g>
+                <g transform="translate(530, 420)" class="hud-label-group">
+                  <rect x="0" y="0" width="150" height="30" rx="6" fill="rgba(6, 9, 7, 0.85)" stroke="var(--accent)" stroke-width="1"/>
+                  <text x="10" y="18" fill="var(--accent-light)" font-family="monospace" font-size="10" letter-spacing="0.5">NITROGEN: STABLE</text>
+                </g>
+              </g>
+
+              <!-- Animated Connection Lines & Nodes (Phase 6) -->
+              <g class="hud-layer hud-network-layer">
+                <path d="M250 200 L500 300 L750 180 M500 300 L680 420 M250 200 L180 350 L340 450 L500 300" stroke="rgba(52, 211, 153, 0.35)" stroke-width="1.5" class="grid-flow"/>
+                
+                <g transform="translate(250, 200)" class="pulse-node" style="transform-origin: 250px 200px;">
+                  <circle cx="0" cy="0" r="8" fill="var(--accent)" opacity="0.8"/>
+                  <circle cx="0" cy="0" r="16" stroke="var(--accent-light)" stroke-width="1.5" opacity="0.4"/>
+                </g>
+                <g transform="translate(500, 300)" class="pulse-node" style="transform-origin: 500px 300px;">
+                  <circle cx="0" cy="0" r="10" fill="var(--accent)" opacity="0.9"/>
+                  <circle cx="0" cy="0" r="20" stroke="var(--accent-light)" stroke-width="1.5" opacity="0.4"/>
+                </g>
+                <g transform="translate(750, 180)" class="pulse-node" style="transform-origin: 750px 180px;">
+                  <circle cx="0" cy="0" r="8" fill="var(--accent)" opacity="0.8"/>
+                  <circle cx="0" cy="0" r="16" stroke="var(--accent-light)" stroke-width="1.5" opacity="0.4"/>
+                </g>
+                <g transform="translate(680, 420)" class="pulse-node" style="transform-origin: 680px 420px;">
+                  <circle cx="0" cy="0" r="8" fill="var(--accent)" opacity="0.8"/>
+                  <circle cx="0" cy="0" r="16" stroke="var(--accent-light)" stroke-width="1.5" opacity="0.4"/>
+                </g>
+                
+                <text x="520" y="280" fill="var(--accent-light)" font-family="monospace" font-size="12" letter-spacing="1">COORD SYNC ACTIVE</text>
+                <text x="270" y="195" fill="rgba(255,255,255,0.7)" font-family="monospace" font-size="10">PLOT_01: STABLE</text>
+                <text x="770" y="175" fill="rgba(255,255,255,0.7)" font-family="monospace" font-size="10">PLOT_02: ALERT</text>
+              </g>
+
+              <!-- Gradients -->
+              <defs>
+                <linearGradient id="laser-gradient" x1="200" y1="0" x2="800" y2="0" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="rgba(16, 185, 129, 0)"/>
+                  <stop offset="50%" stop-color="rgba(52, 211, 153, 1)"/>
+                  <stop offset="100%" stop-color="rgba(16, 185, 129, 0)"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </div>
+        <div class="twin-info">
+          <h3 id="twinTitle">Phase 1: Pure Land</h3>
+          <p id="twinDesc">The farmer sees only the physical land. Fragmented information, hidden crop stresses, and uncertain weather conditions create a reactive environment.</p>
+          <div class="twin-stats">
+            <div class="twin-stat-item">
+              <span class="twin-stat-val" id="twinStatVal">10%</span>
+              <span class="twin-stat-lbl" id="twinStatLbl">Visibility</span>
+            </div>
+            <div class="twin-stat-item">
+              <span class="twin-stat-val" id="twinStatVal2">Reactive</span>
+              <span class="twin-stat-lbl" id="twinStatLbl2">Operating Mode</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section id="testimonials">
+    <div class="section-header">
+      <h2 class="section-title">What Farmers Say</h2>
+      <p class="section-subtitle">Hear from farmers and coordinators who use AgriSense AI to optimize harvests.</p>
+    </div>
+    <div class="testimonials-track-container">
+      <div class="testimonials-track">
+        <div class="testimonial-card">
+          <p class="testimonial-text">
+            "AgriSense AI helps me diagnose crop disease in seconds. The voice feedback in our regional language is extremely useful."
+          </p>
+          <div class="testimonial-author">
+            <span class="author-name">Rajesh Kurup</span>
+            <span class="author-role">Cotton Farmer</span>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <p class="testimonial-text">
+            "As a village coordinator, I can register dozens of plots and keep track of everyone's input logs. It has simplified record-keeping completely."
+          </p>
+          <div class="testimonial-author">
+            <span class="author-name">Sunita Patil</span>
+            <span class="author-role">Community Coordinator</span>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <p class="testimonial-text">
+            "The weather alert feature saved my harvest last month. I got a timely alert about heavy rainfall and postponed spraying."
+          </p>
+          <div class="testimonial-author">
+            <span class="author-name">Amit Singh</span>
+            <span class="author-role">Wheat Farmer</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section id="cta">
+    <div class="cta-orb"></div>
+    <div class="cta-inner">
+      <div class="cta-content">
+        <h2>Ready to Revolutionize Your Farming?</h2>
+        <p>Experience intelligent farm management and decision support with AgriSense AI.</p>
+        <a href="#" class="btn-primary btn-large">Get Started Now</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;">
+          <path d="M2 22c1.25-3.33 3.58-6 7-8m0 0c3.42-2 6.75-2 10-2M9 14c-1.33-2.67-1-6.33 1-11M9 14c2.25 1.5 4.5 3 7 3"/>
+        </svg>
+        Agri<span>Sense AI</span>
+      </div>
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Contact Support</a>
+      </div>
+      <p class="footer-copy">&copy; 2026 AgriSense AI. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

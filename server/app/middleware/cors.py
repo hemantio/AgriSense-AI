@@ -13,9 +13,17 @@ settings = get_settings()
 
 def setup_cors(app):
     """Configure CORS with strict origin whitelist."""
+    origins = settings.ALLOWED_ORIGINS
+    if settings.is_production and "*" in origins:
+        # Strip wildcard origins in production for security hardening
+        origins = [origin for origin in origins if origin != "*"]
+        if not origins:
+            # Fallback to local port if list becomes empty
+            origins = ["http://localhost:3000"]
+            
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.ALLOWED_ORIGINS,
+        allow_origins=origins,
         allow_credentials=True,
         allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allow_headers=[

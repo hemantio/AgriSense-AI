@@ -15,6 +15,67 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
   String _errorMessage = '';
 
+  void _showSettingsDialog() {
+    final urlController = TextEditingController(text: ApiService.baseUrl);
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF09090B),
+          title: const Text('Developer Settings', style: TextStyle(color: Colors.white)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text('Configure API Base URL:', style: TextStyle(color: Color(0xFFA1A1AA), fontSize: 12)),
+              const SizedBox(height: 8),
+              TextField(
+                controller: urlController,
+                style: const TextStyle(color: Colors.white, fontSize: 14),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: const Color(0xFF030303),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Color(0xFF18181B)),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Color(0xFF10B981)),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel', style: TextStyle(color: Color(0xFFA1A1AA))),
+            ),
+            TextButton(
+              onPressed: () async {
+                final newUrl = urlController.text.trim();
+                if (newUrl.isNotEmpty) {
+                  await ApiService.setCustomBaseUrl(newUrl);
+                  if (mounted) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('API Base URL updated to: $newUrl'),
+                        backgroundColor: const Color(0xFF10B981),
+                      ),
+                    );
+                  }
+                }
+              },
+              child: const Text('Save', style: TextStyle(color: Color(0xFF10B981))),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> _handleLogin() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
@@ -78,17 +139,20 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               // Logo Symbol
               Center(
-                child: Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF10B981), // Living Emerald
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Icon(
-                    Icons.spa,
-                    color: Color(0xFF030303),
-                    size: 36,
+                child: GestureDetector(
+                  onDoubleTap: _showSettingsDialog,
+                  child: Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF10B981), // Living Emerald
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Icon(
+                      Icons.spa,
+                      color: Color(0xFF030303),
+                      size: 36,
+                    ),
                   ),
                 ),
               ),

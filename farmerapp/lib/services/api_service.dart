@@ -5,8 +5,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http_parser/http_parser.dart';
 
 class ApiService {
-  // Use 10.0.2.2 which is the Android emulator gateway to host's localhost (port 8000)
-  static const String baseUrl = 'http://10.0.2.2:8000/api/v1';
+  static String _baseUrl = 'http://10.0.2.2:8000/api/v1';
+  static String get baseUrl => _baseUrl;
+
+  static Future<void> loadBaseUrl() async {
+    final prefs = await SharedPreferences.getInstance();
+    _baseUrl = prefs.getString('api_base_url') ?? 'http://10.0.2.2:8000/api/v1';
+  }
+
+  static Future<void> setCustomBaseUrl(String url) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('api_base_url', url);
+    _baseUrl = url;
+  }
 
   static Future<String?> getAccessToken() async {
     final prefs = await SharedPreferences.getInstance();

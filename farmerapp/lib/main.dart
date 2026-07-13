@@ -3,8 +3,9 @@ import 'package:farmerapp/services/api_service.dart';
 import 'package:farmerapp/screens/login_screen.dart';
 import 'package:farmerapp/screens/dashboard_screen.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await ApiService.loadBaseUrl();
   runApp(const MyApp());
 }
 

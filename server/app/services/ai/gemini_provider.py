@@ -33,7 +33,16 @@ class GeminiProvider:
         """Lazy-load the Gemini model."""
         if self._model is None and settings.GEMINI_API_KEY:
             import google.generativeai as genai
-            self._model = genai.GenerativeModel(self.model_name)
+            safety_settings = [
+                {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+                {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+                {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+                {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+            ]
+            self._model = genai.GenerativeModel(
+                model_name=self.model_name,
+                safety_settings=safety_settings,
+            )
         return self._model
 
     async def analyze_crop_health(self, image_path: str) -> CropAnalysisResult:

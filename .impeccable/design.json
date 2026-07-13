@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-28T14:38:00Z",
+  "title": "Design System: AgriSense AI",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Living Emerald", "canonical": "oklch(0.68 0.18 160)" },
+      "primary-light": { "role": "primary", "displayName": "Emerald Mist", "canonical": "oklch(0.78 0.15 160)" },
+      "accent": { "role": "accent", "displayName": "Orchid Petal", "canonical": "oklch(0.82 0.12 330)" },
+      "neutral-bg": { "role": "neutral", "displayName": "Absolute Soil", "canonical": "oklch(0.08 0 0)" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero headlines only." },
+      "body": { "displayName": "Body", "purpose": "General description and values." }
+    },
+    "shadows": [
+      { "name": "glow-active", "value": "rgba(16, 185, 129, 0.15)", "purpose": "Focus glow around inputs and primary buttons." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Primary action button.",
+      "html": "<button class=\"ds-btn-primary\">Get Started</button>",
+      "css": ".ds-btn-primary { background: #10b981; color: #030303; font-weight: 600; border-radius: 8px; border: 1px solid #10b981; padding: 8px 16px; cursor: pointer; transition: all 0.2s ease; } .ds-btn-primary:hover { background: transparent; color: #34d399; border-color: #34d399; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Agrarian Codex",
+    "overview": "AgriSense AI employs a visual language that matches high-tech telemetry precision with natural organic weight. The design is structured to serve both small-scale rural cultivators and village-level advisors under field conditions. It relies on crisp typography, flat-layered structures, and natural leaf-and-soil values.",
+    "keyCharacteristics": [
+      "High-contrast typography optimized for outdoor mobile screens.",
+      "Organic color markers representing health (deep green), warning (amber), and flowers/accent (orchid petal).",
+      "Glassmorphic overlays with strict, crisp borders to define hierarchy without heavy drop shadows."
+    ],
+    "rules": [
+      { "name": "The Contrast Rule", "body": "Body text must always maintain at least a 4.5:1 contrast ratio. Gray text on a dark background is forbidden; use slightly lighter neutral values instead to guarantee outdoor readability.", "section": "colors" },
+      { "name": "The Heading Balance Rule", "body": "Heading titles (H1–H3) must utilize text-wrap: balance to prevent awkward orphaned words and uneven layout breaks.", "section": "typography" },
+      { "name": "The Stacking Border Rule", "body": "To partition surfaces, use thin borders (border-color 8% white) rather than shadows. Shadows should only appear under glass container overlays to indicate interactive depth on hover.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use emerald green (#10b981) exclusively for positive actions, verified states, and active items.",
+      "Do enforce a line-length limit of 75ch on all paragraphs to preserve readability on mobile screens.",
+      "Do keep card borders clean and thin (1px) using semi-transparent white."
+    ],
+    "donts": [
+      "Don't use neon gradients or float elements with thick drop shadows.",
+      "Don't use tiny, uppercase, wide-tracked eyebrows above headers.",
+      "Don't round cards or dialogs beyond 12px."
+    ]
+  }
+}
