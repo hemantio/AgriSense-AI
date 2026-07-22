@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // --- Standalone Output for Docker Production Builds ---
+  output: "standalone",
+
   // --- Allowed Dev Origins for Network Development ---
   allowedDevOrigins: ["192.168.0.106", "localhost", "192.168.0.106:3000", "localhost:3000"],
 

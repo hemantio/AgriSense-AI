@@ -1,0 +1,42 @@
+# Virtual environments
+.venv
+venv
+env
+ENV
+
+# Python cache
+__pycache__
+*.py[cod]
+*$py.class
+.pytest_cache
+.mypy_cache
+.coverage
+htmlcov
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode
+.idea
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Database files (local dev only)
+*.db
+*.sqlite3
+
+# Uploads (mounted as volume)
+uploads/
+
+# Misc
+README.md
+*.md
+tests/

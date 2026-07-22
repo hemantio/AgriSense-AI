@@ -67,6 +67,12 @@ services:
       redis:
         condition: service_healthy
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
 
   # --- Next.js Frontend ---
   client:
@@ -77,15 +83,19 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    environment:
+      - NEXT_PUBLIC_API_URL=http://server:8000/api/v1
     ports:
       - "3000:3000"
-    volumes:
-      - ./client:/app
-      - /app/node_modules
-      - /app/.next
     depends_on:
-      - server
-    command: npm run dev
+      server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
 volumes:
   postgres_data:
