@@ -14,9 +14,12 @@ settings = get_settings()
 def setup_cors(app):
     """Configure CORS with strict origin whitelist."""
     origins = settings.ALLOWED_ORIGINS
-    if settings.is_production and "*" in origins:
-        # Strip wildcard origins in production for security hardening
-        origins = [origin for origin in origins if origin != "*"]
+    if settings.is_production:
+        # Strip wildcard and private template origins in production for security hardening
+        origins = [
+            origin for origin in origins 
+            if origin != "*" and not any(ip in origin for ip in ("192.168.", "10.", "172.16."))
+        ]
         if not origins:
             # Fallback to local port if list becomes empty
             origins = ["http://localhost:3000"]

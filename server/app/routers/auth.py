@@ -121,11 +121,12 @@ async def login(
             detail="Invalid email or password",
         )
 
-    # Generate tokens
+    # Generate tokens with token version tracking claim
     token_data = {
         "sub": str(user.id),
         "role": user.role,
         "name": user.name,
+        "v": user.token_version,
     }
     access_token = create_access_token(token_data)
     refresh_token = create_refresh_token(token_data)
@@ -181,11 +182,12 @@ async def refresh_token(
             detail="User not found or inactive",
         )
 
-    # Issue new tokens (token rotation)
+    # Issue new tokens (token rotation with version tracking claim)
     token_data = {
         "sub": str(user.id),
         "role": user.role,
         "name": user.name,
+        "v": user.token_version,
     }
     new_access_token = create_access_token(token_data)
     new_refresh_token = create_refresh_token(token_data)
@@ -217,7 +219,9 @@ async def get_me(
 
 
 @router.put("/me", response_model=UserProfileResponse)
+@limiter.limit(settings.RATE_LIMIT_AUTH)
 async def update_me(
+    request: Request,
     body: UserUpdateRequest,
     current_user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -233,10 +237,13 @@ async def update_me(
             detail="User not found",
         )
 
-    # Update only provided fields
+    # Explicitly whitelist allowable profile updates to prevent mass assignment (HIGH-01)
+    allowed_fields = {"name", "phone_number", "village_name", "preferred_language", "notes"}
     update_data = body.model_dump(exclude_unset=True)
+    
     for field, value in update_data.items():
-        setattr(user, field, value)
+        if field in allowed_fields:
+            setattr(user, field, value)
 
     await db.flush()
 
@@ -252,7 +259,9 @@ async def update_me(
 
 
 @router.post("/change-password", status_code=200)
+@limiter.limit(settings.RATE_LIMIT_AUTH)
 async def change_password(
+    request: Request,
     body: PasswordChangeRequest,
     current_user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -272,6 +281,8 @@ async def change_password(
         )
 
     user.hashed_password = hash_password(body.new_password)
+    # Increment token version on password change to invalidate outstanding tokens (HIGH-02)
+    user.token_version += 1
     await db.flush()
 
     await log_action(

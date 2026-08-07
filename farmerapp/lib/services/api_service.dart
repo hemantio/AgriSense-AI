@@ -213,10 +213,10 @@ class ApiService {
         'crop_id': cropId,
         'input_type': type,
         'product_name': productName,
-        if (brand != null) 'brand': brand,
+        'brand': ?brand,
         'quantity': quantity,
         'quantity_unit': unit,
-        if (notes != null) 'application_notes': notes,
+        'application_notes': ?notes,
       }),
     );
     return jsonDecode(response.body);
@@ -246,7 +246,7 @@ class ApiService {
         'crop_id': cropId,
         'expense_type': type,
         'amount': amount,
-        if (notes != null) 'notes': notes,
+        'notes': ?notes,
       }),
     );
     return jsonDecode(response.body);

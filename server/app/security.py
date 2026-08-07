@@ -195,6 +195,13 @@ async def get_current_user(
             detail="User not found or inactive",
         )
 
+    # Validate token version to support revocation/password change invalidation
+    if payload.get("v") != user.token_version:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has been revoked",
+        )
+
     return {
         "user_id": str(user.id),
         "role": role,

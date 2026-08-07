@@ -156,8 +156,8 @@ async def send_chat_message(
                 yield "event: done\ndata: {}\n\n".format(json.dumps(done_payload))
 
             except Exception as e:
-                logger.error(f"SSE stream error: {str(e)}")
-                yield "event: error\ndata: {}\n\n".format(json.dumps({"detail": str(e)}))
+                logger.exception("SSE stream processing failed")
+                yield "event: error\ndata: {}\n\n".format(json.dumps({"detail": "An error occurred during message streaming."}))
 
         return StreamingResponse(event_generator(), media_type="text/event-stream")
 
@@ -171,10 +171,10 @@ async def send_chat_message(
         )
         return response_payload
     except Exception as e:
-        logger.error(f"Failed to process CIE message: {str(e)}")
+        logger.exception("Failed to process CIE message")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"CIE Processing error: {str(e)}"
+            detail="An error occurred while processing the request."
         )
 
 
@@ -271,7 +271,7 @@ async def submit_feedback(
         correction=body.correction
     )
     db.add(feedback)
-    await db.commit()
+    await db.flush()
     return {"status": "success", "message": "Feedback submitted successfully."}
 
 

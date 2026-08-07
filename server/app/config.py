@@ -5,11 +5,19 @@ Centralized, type-safe configuration using Pydantic BaseSettings.
 All secrets loaded from environment variables (.env file).
 """
 
+import secrets
+import sys
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Default placeholder secrets that MUST be changed in production
+_INSECURE_JWT_DEFAULTS = {
+    "CHANGE-THIS-TO-A-SECURE-RANDOM-KEY-IN-PRODUCTION",
+    "CHANGE-THIS-TO-A-SECURE-RANDOM-KEY-IN-PRODUCTION-agrisense-super-secret-key-123456",
+}
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 env_path = BASE_DIR / ".env"
@@ -106,4 +114,26 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     """Cached settings singleton — loaded once on first access."""
-    return Settings()
+    settings = Settings()
+    _validate_security_settings(settings)
+    return settings
+
+
+def _validate_security_settings(settings: Settings) -> None:
+    """Block startup if critical security settings are insecure in non-dev environments."""
+    if settings.ENVIRONMENT in ("staging", "production"):
+        if settings.JWT_SECRET_KEY in _INSECURE_JWT_DEFAULTS:
+            print(
+                "\n❌ FATAL: JWT_SECRET_KEY is set to an insecure default value.\n"
+                "   Generate a secure key with:\n"
+                f'   python -c "import secrets; print(secrets.token_urlsafe(64))"\n'
+                "   Then set JWT_SECRET_KEY in your .env file.\n",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        if len(settings.JWT_SECRET_KEY) < 32:
+            print(
+                "\n❌ FATAL: JWT_SECRET_KEY is too short (minimum 32 characters).\n",
+                file=sys.stderr,
+            )
+            sys.exit(1)

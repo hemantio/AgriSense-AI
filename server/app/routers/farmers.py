@@ -20,6 +20,16 @@ from app.utils.audit import log_action
 router = APIRouter(prefix="/farmers", tags=["Farmers"])
 
 
+def _escape_like(pattern: str) -> str:
+    """Escape SQL LIKE/ILIKE wildcards to prevent wildcard injection."""
+    return (
+        pattern
+        .replace("\\", "\\\\")
+        .replace("%", "\\%")
+        .replace("_", "\\_")
+    )
+
+
 @router.get("/", response_model=FarmerListResponse)
 async def list_farmers(
     page: int = Query(1, ge=1),
@@ -35,17 +45,19 @@ async def list_farmers(
         User.is_deleted == False,  # noqa: E712
     )
 
-    # Search filter
+    # Search filter (escaped to prevent wildcard injection)
     if search:
+        safe_search = _escape_like(search)
         query = query.where(
-            User.name.ilike(f"%{search}%")
-            | User.email.ilike(f"%{search}%")
-            | User.phone_number.ilike(f"%{search}%")
+            User.name.ilike(f"%{safe_search}%")
+            | User.email.ilike(f"%{safe_search}%")
+            | User.phone_number.ilike(f"%{safe_search}%")
         )
 
-    # Village filter
+    # Village filter (escaped)
     if village:
-        query = query.where(User.village_name.ilike(f"%{village}%"))
+        safe_village = _escape_like(village)
+        query = query.where(User.village_name.ilike(f"%{safe_village}%"))
 
     # Count total
     count_query = select(func.count()).select_from(query.subquery())

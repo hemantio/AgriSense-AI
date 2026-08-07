@@ -46,6 +46,9 @@ class User(UUIDPrimaryKeyMixin, TimestampMixin, SoftDeleteMixin, Base):
     is_verified: Mapped[bool] = mapped_column(
         Boolean, default=False, nullable=False
     )
+    token_version: Mapped[int] = mapped_column(
+        default=1, nullable=False
+    )
 
     # --- Extra Timestamps ---
     last_login_at: Mapped[datetime | None] = mapped_column(

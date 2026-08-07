@@ -53,7 +53,6 @@ class _MyAppState extends State<MyApp> {
           primary: Color(0xFF10B981),
           secondary: Color(0xFFFFB1EE), // Orchid
           surface: Color(0xFF09090B),
-          background: Color(0xFF030303),
         ),
         textTheme: const TextTheme(
           bodyLarge: TextStyle(color: Colors.white),

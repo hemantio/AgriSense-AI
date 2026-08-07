@@ -80,3 +80,7 @@ server/uploads/
 # Docker volumes
 postgres_data/
 redis_data/
+
+# Strix Security Scan Tool
+.strix-tool/
+strix_runs/

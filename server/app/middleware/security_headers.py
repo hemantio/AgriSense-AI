@@ -29,14 +29,13 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         # --- Core Security Headers ---
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
-        response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.headers["Permissions-Policy"] = (
             "camera=(), microphone=(self), geolocation=(self), "
             "payment=(), usb=(), magnetometer=()"
         )
 
-        # --- Content Security Policy ---
+        # --- Content Security Policy & Strict Transport Security ---
         if settings.is_production:
             response.headers["Content-Security-Policy"] = (
                 "default-src 'self'; "
@@ -51,6 +50,19 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             )
             response.headers["Strict-Transport-Security"] = (
                 "max-age=31536000; includeSubDomains; preload"
+            )
+        else:
+            # Relaxed CSP for local development (supports tools, documentation exploration, live reloading)
+            response.headers["Content-Security-Policy"] = (
+                "default-src 'self'; "
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
+                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+                "font-src 'self' https://fonts.gstatic.com; "
+                "img-src 'self' data: https://*.tile.openstreetmap.org blob:; "
+                "connect-src 'self' ws://localhost:* http://localhost:* https://api.openweathermap.org; "
+                "frame-ancestors 'none'; "
+                "base-uri 'self'; "
+                "form-action 'self';"
             )
 
         # --- Request Tracing ---
