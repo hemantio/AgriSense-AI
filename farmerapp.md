@@ -1,93 +1,605 @@
-# AgriSense Farmer App — Mobile Companion Specification
+# AgriSense AI – Farmer Companion Application Requirements
 
-The **AgriSense Farmer App** is a lightweight, mobile-first companion application (designed as a Progressive Web App (PWA) or hybrid mobile app) tailored for small-scale farmers in rural communities. 
+## Version
 
-Following **"The Agrarian Codex"** design principles, it prioritizes extreme outdoor readability, high contrast, low cognitive load, and voice/audio-assisted workflows.
+1.0
 
----
+## Product Name
 
-## 1. Product Vision & UX Goals
-
-- **Extreme Accessibility**: Large typography, simple semantic icons, and touch targets of at least `48px x 48px` to accommodate field workers.
-- **Voice-First Integration**: A prominent speaker button beside every diagnostic report, alert, and recommendation, triggering local Text-to-Speech (TTS).
-- **Offline Resilience**: Cache critical weather alerts, crop logs, and offline form inputs using service workers, syncing data when cellular networks become available.
-- **Visual Clarity**: Highly legible green and amber colors to communicate crop health status and warnings immediately without forcing farmers to read small-size text.
+**AgriSense AI Farmer Companion**
 
 ---
 
-## 2. Design Tokens & UI Architecture (Mobile)
+# 1. Overview
 
-We adapt the core **Agrarian Codex** design tokens for mobile/outdoor visibility:
+The Farmer Companion is the mobile application of the AgriSense AI ecosystem.
 
-| Token | Value | Mobile Application Context |
-| :--- | :--- | :--- |
-| **Primary Color** | `#10b981` (Living Emerald) | Affirmative states, camera triggers, success highlights. |
-| **Accent Color** | `#ffb1ee` (Orchid Petal) | Voice/Audio playback controls and audio recording buttons. |
-| **Danger Color** | `#ef4444` (Rust Red) | Critical weather alerts, pest outbreaks, severe crop alerts. |
-| **Warning Color** | `#f59e0b` (Amber Orange) | Advisories (e.g., pending verifications, weather warnings). |
-| **Neutral BG** | `#030303` (Absolute Soil) | Base app dark canvas (ideal for outdoor sun glare reduction). |
-| **Text Primary** | `#fafafa` (Grounded White) | Header and core advisory text (high readability). |
-| **Rounded Scale** | `sm: 6px`, `md: 8px` | Maximum boundary rounding for touch components. |
+It is designed specifically for farmers to manage daily farming activities using a simple, multilingual, and AI-assisted interface.
+
+Unlike the Coordinator Dashboard, the Farmer App prioritizes ease of use, large touch targets, offline support, camera-first workflows, and voice assistance.
+
+The app enables farmers to receive recommendations, upload crop images, monitor weather, manage expenses, and communicate with their village coordinator.
 
 ---
 
-## 3. Core Screens & User Flows
+# 2. Primary Goals
 
-### 3.1 Screen A: Home / Unified Telemetry Dashboard
-The main screen provides a high-contrast feed of immediate alerts and primary quick-actions.
-- **Visual Elements**:
-  - **Live Weather Hub**: Giant temperature and rain probability display with simple sky icons.
-  - **Quick Scan Hero Banner**: A giant card (Living Emerald background) with a camera icon reading: **"📸 SCAN CROP HEALTH NOW"**.
-  - **Recent advisories list**: Crucial crop care tasks.
-- **Voice Loop**: Clicking the **"Listen"** icon at the top plays a summary: *"Good morning, Ramesh. Rain is expected at 4:00 PM. Do not apply fertilizer today."*
-
-### 3.2 Screen B: AI Crop Health Scanner
-Enables farmers to capture leaf images, submit them to the FastAPI server, and view live results.
-- **Workflow**:
-  1. User clicks **"Scan Crop"** → Opens native mobile camera.
-  2. User captures photo → Displays instant thumbnail preview.
-  3. User clicks **"Analyze"** → Triggers API upload with visual progress telemetry.
-  4. Diagnostics panel reveals findings in plain language:
-     - **Diagnosis**: *"Leaf Spot Fungus Detected."*
-     - **Treatment (Organic)**: *"Spray neem oil solution."*
-     - **Treatment (Chemical)**: *"Apply copper-based fungicide."*
-- **Voice Integration**: A large **"🔊 Play Audio Report"** button reads the treatments aloud in the farmer's preferred language.
-
-### 3.3 Screen C: Interactive Plot Map
-Provides map marking for farm plot registration.
-- **Workflow**:
-  - Leverages React-Leaflet with dark-mode tile mapping.
-  - Farmer taps screen corners to place boundary markers.
-  - Auto-calculates approximate acreage.
-  - Verification status badge clearly shows: **"Verification Pending (Admin Review)"** or **"Plot Verified"**.
-
-### 3.4 Screen D: Expense & Input Logger
-Allows farmers to log seed cost, labor, fertilizers, and sprays.
-- **UX Features**:
-  - Over-sized numeric keypad for easy entry.
-  - Quick select categories with large organic icons (Seeds, Fertilizer, Pesticide, Labor, Tractor).
-  - OCR scan mode: Farmer snaps a photo of a fertilizer bag label, and Tesseract automatically extracts brand and ingredients.
+* Make AI accessible to every farmer.
+* Reduce paperwork.
+* Digitize farm records.
+* Detect crop problems early.
+* Deliver recommendations in local languages.
+* Connect farmers with coordinators through one platform.
 
 ---
 
-## 4. API Client Integration
+# 3. Target Users
 
-The Farmer App connects directly to the FastAPI backend endpoints:
-
-- **Authentication**: `POST /auth/login` (Returns access tokens and language preferences).
-- **Plot Management**: `POST /plots/` and `GET /plots/` (Saves coordinates and GeoJSON polygons).
-- **Crop Diagnostics**: `POST /health/analyze` (Uploads images to `/uploads/crop_health/`).
-- **Telemetry Fetch**: `GET /dashboard/stats` (Loads statistics and active alerts).
-- **Weather Fetch**: `GET /weather/forecast` (Retrieves local coordinates telemetry).
+* Small-scale farmers
+* Village farmers
+* Elderly farmers
+* Farmers with limited digital literacy
 
 ---
 
-## 5. Technical Implementation Plan
+# 4. First-Time Setup
 
-1. **Frontend Foundation (PWA)**:
-   - Next.js mobile-first layout using Tailwind CSS.
-   - Configure Web App Manifest (`manifest.json`) and service workers (`sw.js`) for asset and routing caching.
-2. **Audio Assist Engine**:
-   - Integrate standard browser **Web Speech API** (`window.speechSynthesis`) for client-side multi-lingual Text-to-Speech (TTS) using local voices.
-3. **Offline Sync Queue**:
-   - Implement IndexedDB (via `idb` library) to save pending health scans and logs when offline, automatically posting them when `navigator.onLine` transitions to `true`.
+The farmer should never manually enter server details.
+
+Joining a farming community should take less than one minute.
+
+---
+
+## Join by QR Code
+
+Coordinator Dashboard generates:
+
+* QR Code
+* Join Code
+
+Farmer opens app.
+
+Tap:
+
+Join Community
+
+Camera opens.
+
+Scan QR Code.
+
+Automatically:
+
+* Connect to Coordinator
+* Register Village
+* Download configuration
+* Receive assigned farms
+
+Alternative:
+
+Enter Join Code manually.
+
+---
+
+# 5. Authentication
+
+Support
+
+* Mobile Number OTP
+* PIN
+* Biometric Login
+* Face Unlock (optional)
+
+---
+
+# 6. Home Screen
+
+The Home screen should answer:
+
+"What should I do today?"
+
+Display
+
+Good Morning
+
+Farmer Name
+
+Village
+
+Today's Weather
+
+AI Recommendation
+
+Next Irrigation
+
+Next Fertilizer
+
+Critical Alerts
+
+Quick Camera Button
+
+Current Crop Health
+
+Recent Notifications
+
+---
+
+# 7. Bottom Navigation
+
+Home
+
+My Fields
+
+Scan
+
+Alerts
+
+Profile
+
+No sidebars.
+
+No complex menus.
+
+---
+
+# 8. My Fields
+
+Display all registered plots.
+
+Each field card includes
+
+* Field Name
+* Crop
+* Area
+* Growth Stage
+* Health Score
+* Last Watered
+* Next Recommendation
+
+Tap opens field details.
+
+---
+
+# 9. Field Details
+
+Information
+
+Map
+
+Crop Details
+
+Timeline
+
+Expense Summary
+
+Recent Images
+
+Health Reports
+
+Weather
+
+Recommendations
+
+Quick Actions
+
+Take Photo
+
+Record Watering
+
+Add Fertilizer
+
+Add Pesticide
+
+Add Expense
+
+Ask AI
+
+---
+
+# 10. AI Crop Scanner
+
+The most important feature.
+
+Workflow
+
+Open Camera
+
+Capture Crop
+
+Upload Image
+
+AI Analysis
+
+Receive
+
+Disease Detection
+
+Nutrient Deficiency
+
+Health Score
+
+Recommendation
+
+Confidence Score
+
+History stored automatically.
+
+---
+
+# 11. Fertilizer & Pesticide Scanner
+
+Camera scans product packaging.
+
+OCR extracts
+
+Product Name
+
+Brand
+
+Usage
+
+Dosage
+
+Manufacturer
+
+Farmer confirms.
+
+Saved automatically.
+
+---
+
+# 12. Daily Recommendations
+
+Examples
+
+Rain expected tomorrow.
+
+Delay fertilizer application.
+
+Low soil moisture detected.
+
+Water field tomorrow morning.
+
+Possible nitrogen deficiency.
+
+Recommendations available as
+
+Text
+
+Voice
+
+---
+
+# 13. Weather
+
+Current Weather
+
+Hourly Forecast
+
+7-Day Forecast
+
+Rain Alerts
+
+Temperature
+
+Humidity
+
+Wind Speed
+
+Sunrise
+
+Sunset
+
+Agricultural advice linked to weather.
+
+---
+
+# 14. Expense Tracker
+
+Quick entry.
+
+Categories
+
+Seeds
+
+Fertilizer
+
+Pesticides
+
+Labour
+
+Fuel
+
+Water
+
+Equipment
+
+Other
+
+Dashboard shows
+
+Today's Cost
+
+Season Cost
+
+Total Investment
+
+---
+
+# 15. Irrigation Log
+
+Manual
+
+Motor Started
+
+Motor Stopped
+
+Estimated Water Usage
+
+Duration
+
+Future
+
+Smart Motor Integration
+
+---
+
+# 16. Crop Timeline
+
+Automatically generated.
+
+Events
+
+Planting
+
+Watering
+
+Fertilizer
+
+Pesticide
+
+Weather
+
+Crop Images
+
+AI Reports
+
+Expenses
+
+Timeline scrolls horizontally.
+
+---
+
+# 17. Notifications
+
+Types
+
+Weather
+
+AI Alerts
+
+Coordinator Messages
+
+Upcoming Tasks
+
+Simulation Alerts (Demo)
+
+Notifications grouped by urgency.
+
+---
+
+# 18. Voice Assistant
+
+Microphone always accessible.
+
+Farmer asks
+
+"When should I water?"
+
+"What disease is this?"
+
+"What fertilizer should I use?"
+
+"What is today's weather?"
+
+AI replies
+
+Text
+
+Voice
+
+Preferred Language
+
+---
+
+# 19. Offline Mode
+
+Critical feature.
+
+Offline capabilities
+
+Take Photos
+
+Save Expenses
+
+Record Watering
+
+View Previous Recommendations
+
+Data syncs automatically when internet returns.
+
+---
+
+# 20. Languages
+
+English
+
+Hindi
+
+Marathi
+
+Architecture should allow more languages.
+
+---
+
+# 21. Accessibility
+
+Large Buttons
+
+Simple Language
+
+Voice Playback
+
+High Contrast
+
+Minimal Typing
+
+Camera First
+
+One-Hand Operation
+
+---
+
+# 22. AI Features
+
+Crop Disease Detection
+
+Nutrient Deficiency Detection
+
+Weather-aware Recommendations
+
+Historical Analysis
+
+Growth Monitoring
+
+Pattern Recognition
+
+Future Yield Suggestions
+
+---
+
+# 23. Communication
+
+Farmer can
+
+Send Question
+
+Upload Image
+
+Voice Message
+
+Coordinator replies
+
+Text
+
+Voice
+
+Image Annotation
+
+---
+
+# 24. Security
+
+OTP Login
+
+JWT Authentication
+
+Encrypted Storage
+
+Offline Data Protection
+
+Secure API Communication
+
+Role-Based Access
+
+---
+
+# 25. Future Scope
+
+Bluetooth Sensor Integration
+
+Soil Moisture Sensors
+
+NPK Sensors
+
+pH Monitoring
+
+Remote Pump Control
+
+Drone Image Analysis
+
+Satellite Health Monitoring
+
+Government Scheme Integration
+
+Market Price Intelligence
+
+Yield Prediction
+
+Carbon Credit Tracking
+
+Digital Crop Passport
+
+---
+
+# 26. User Journey
+
+Coordinator creates village.
+
+↓
+
+Coordinator generates QR Code.
+
+↓
+
+Farmer installs app.
+
+↓
+
+Farmer scans QR Code.
+
+↓
+
+Automatically joins village.
+
+↓
+
+Coordinator approves farmer.
+
+↓
+
+Farmer receives assigned fields.
+
+↓
+
+Uploads crop images.
+
+↓
+
+AI analyzes crop.
+
+↓
+
+Weather monitored continuously.
+
+↓
+
+Recommendations delivered daily.
+
+↓
+
+Coordinator monitors progress.
+
+---
+
+# 27. Success Criteria
+
+A farmer with minimal smartphone experience should be able to:
+
+* Join a village using a QR code in under one minute.
+* Capture and analyze a crop image in under 30 seconds.
+* Understand AI recommendations through text or voice.
+* View weather and daily tasks at a glance.
+* Record expenses and farming activities with minimal typing.
+* Use the application even with intermittent internet connectivity.
+
+The Farmer Companion should feel like a trusted digital farming assistant rather than a complex management application. Every interaction should be simple, fast, and designed for use in real field conditions.

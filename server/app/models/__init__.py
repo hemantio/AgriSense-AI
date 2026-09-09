@@ -15,6 +15,7 @@ from app.models.expense import Expense
 from app.models.irrigation import IrrigationLog
 from app.models.simulation import Simulation
 from app.models.chat import ChatSession, ChatMessage, KnowledgeEmbedding, ChatFeedback, ToolRegistry
+from app.models.group import Group, GroupMember
 
 __all__ = [
     # Mixins
@@ -36,4 +37,6 @@ __all__ = [
     "KnowledgeEmbedding",
     "ChatFeedback",
     "ToolRegistry",
+    "Group",
+    "GroupMember",
 ]

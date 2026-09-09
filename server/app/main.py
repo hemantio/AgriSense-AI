@@ -22,6 +22,7 @@ from app.routers import (
     dashboard,
     expenses,
     farmers,
+    groups,
     health,
     inputs,
     plots,
@@ -98,6 +99,7 @@ def create_app() -> FastAPI:
 
     app.include_router(auth.router, prefix=api_prefix)
     app.include_router(farmers.router, prefix=api_prefix)
+    app.include_router(groups.router, prefix=api_prefix)
     app.include_router(plots.router, prefix=api_prefix)
     app.include_router(crops.router, prefix=api_prefix)
     app.include_router(expenses.router, prefix=api_prefix)

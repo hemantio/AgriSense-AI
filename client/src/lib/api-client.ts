@@ -342,5 +342,12 @@ export const api = {
 
   submitFeedback: (data: { message_id: string; rating: number; was_helpful: boolean; correction?: string }) =>
     apiClient.post("/chat/feedback", data),
+
+  // Groups
+  listGroups: () => apiClient.get("/groups/"),
+  createGroup: (data: { name: string; description?: string }) =>
+    apiClient.post("/groups/", data),
+  listGroupMembers: (groupId: string) =>
+    apiClient.get(`/groups/${groupId}/members`),
 };
 

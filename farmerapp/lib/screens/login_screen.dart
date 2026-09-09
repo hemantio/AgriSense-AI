@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:farmerapp/services/api_service.dart';
 import 'package:farmerapp/screens/dashboard_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,6 +15,24 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   String _errorMessage = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedEmail();
+  }
+
+  Future<void> _loadSavedEmail() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final email = prefs.getString('last_login_email') ?? '';
+      if (email.isNotEmpty) {
+        setState(() {
+          _emailController.text = email;
+        });
+      }
+    } catch (_) {}
+  }
 
   void _showSettingsDialog() {
     final urlController = TextEditingController(text: ApiService.baseUrl);
@@ -95,6 +114,10 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       final res = await ApiService.login(email, password);
       if (res['success'] == true) {
+        try {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('last_login_email', email);
+        } catch (_) {}
         if (mounted) {
           Navigator.pushReplacement(
             context,
@@ -131,12 +154,13 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF030303), // Absolute Soil
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
               // Logo Symbol
               Center(
                 child: GestureDetector(
@@ -299,6 +323,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

@@ -1,16 +1,15 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http_parser/http_parser.dart';
 
 class ApiService {
-  static String _baseUrl = 'http://10.0.2.2:8000/api/v1';
+  static String _baseUrl = 'http://127.0.0.1:8000/api/v1';
   static String get baseUrl => _baseUrl;
 
   static Future<void> loadBaseUrl() async {
     final prefs = await SharedPreferences.getInstance();
-    _baseUrl = prefs.getString('api_base_url') ?? 'http://10.0.2.2:8000/api/v1';
+    _baseUrl = prefs.getString('api_base_url') ?? 'http://127.0.0.1:8000/api/v1';
   }
 
   static Future<void> setCustomBaseUrl(String url) async {
@@ -250,5 +249,31 @@ class ApiService {
       }),
     );
     return jsonDecode(response.body);
+  }
+
+  // Join a cooperative group
+  static Future<Map<String, dynamic>> joinGroup(String groupId) async {
+    final url = Uri.parse('$baseUrl/groups/$groupId/join');
+    final headers = await _getHeaders();
+    final response = await http.post(
+      url,
+      headers: headers,
+    );
+    return jsonDecode(response.body);
+  }
+
+  // List groups current user belongs to
+  static Future<List<dynamic>> listMyGroups() async {
+    final url = Uri.parse('$baseUrl/groups/my-groups');
+    final headers = await _getHeaders();
+    final response = await http.get(
+      url,
+      headers: headers,
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as List<dynamic>;
+    } else {
+      throw Exception('Failed to load my groups');
+    }
   }
 }

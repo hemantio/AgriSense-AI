@@ -5,6 +5,7 @@ import 'package:farmerapp/screens/scan_screen.dart';
 import 'package:farmerapp/screens/plots_screen.dart';
 import 'package:farmerapp/screens/logs_screen.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:farmerapp/screens/group_scanner_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -129,6 +130,7 @@ class _HomeTabState extends State<_HomeTab> {
   bool _loading = true;
   int _plotsCount = 0;
   int _cropsCount = 0;
+  List<dynamic> _myGroups = [];
 
   // TTS
   final FlutterTts _tts = FlutterTts();
@@ -163,6 +165,11 @@ class _HomeTabState extends State<_HomeTab> {
       final statsData = await ApiService.getDashboardStats();
       final plotsData = await ApiService.listPlots();
       final cropsData = await ApiService.listCrops();
+      
+      List<dynamic> groupsData = [];
+      try {
+        groupsData = await ApiService.listMyGroups();
+      } catch (_) {}
 
       final plots = plotsData['plots'] ?? [];
       final crops = cropsData['crops'] ?? [];
@@ -171,6 +178,7 @@ class _HomeTabState extends State<_HomeTab> {
         _stats = statsData;
         _plotsCount = plots.length;
         _cropsCount = crops.length;
+        _myGroups = groupsData;
       });
 
       // Load weather forecast based on coordinates
@@ -494,6 +502,143 @@ class _HomeTabState extends State<_HomeTab> {
               _buildStatTile(Icons.payments, 'Expenses', '₹${(_stats?['total_expenses'] ?? 0).toString().split('.')[0]}', const Color(0xFF34D399)),
             ],
           ),
+          
+          // Group Scanner trigger card
+          const SizedBox(height: 20),
+          Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF09090B),
+              border: Border.all(color: const Color(0xFF18181B)),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () async {
+                  final reloaded = await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const GroupScannerScreen()),
+                  );
+                  if (reloaded == true) {
+                    _loadDashboardData();
+                  }
+                },
+                borderRadius: BorderRadius.circular(16),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF10B981).withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(Icons.qr_code_scanner, color: Color(0xFF10B981), size: 20),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              isHindi ? 'सहकारी समूह से जुड़ें' : 'Join Cooperative Group',
+                              style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              isHindi ? 'क्यूआर कोड स्कैन कर तुरंत जुड़ें' : 'Scan QR code from Web Admin Panel',
+                              style: const TextStyle(color: Color(0xFF71717A), fontSize: 9),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(Icons.chevron_right, color: Color(0xFF52525B)),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          
+          // My Groups List
+          const SizedBox(height: 20),
+          Text(
+            isHindi ? 'मेरे सहकारी समूह' : 'MY COOPERATIVE GROUPS',
+            style: const TextStyle(color: Color(0xFF52525B), fontSize: 9, fontFamily: 'monospace', fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          if (_myGroups.isEmpty)
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF09090B),
+                border: Border.all(color: const Color(0xFF18181B)),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Center(
+                child: Text(
+                  isHindi ? 'आप अभी तक किसी समूह में शामिल नहीं हैं।' : 'You are not enrolled in any group yet.',
+                  style: const TextStyle(color: Color(0xFF71717A), fontSize: 11),
+                ),
+              ),
+            )
+          else
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _myGroups.length,
+              itemBuilder: (context, index) {
+                final grp = _myGroups[index];
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF09090B),
+                    border: Border.all(color: const Color(0xFF18181B)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.people_outline, color: Color(0xFF10B981), size: 18),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              grp['name'] ?? '',
+                              style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                            ),
+                            if (grp['description'] != null) ...[
+                              const SizedBox(height: 2),
+                              Text(
+                                grp['description'],
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(color: Color(0xFF71717A), fontSize: 9),
+                              ),
+                            ]
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF10B981).withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: const Color(0xFF10B981).withOpacity(0.15)),
+                        ),
+                        child: Text(
+                          grp['code'] ?? '',
+                          style: const TextStyle(color: Color(0xFF10B981), fontSize: 8, fontWeight: FontWeight.bold),
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              },
+            ),
         ],
       ),
     );

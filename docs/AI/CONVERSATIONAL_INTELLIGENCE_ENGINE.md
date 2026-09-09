@@ -80,8 +80,8 @@ AgriSense AI currently requires farmers to navigate through nested dashboard pag
 
 ### Before vs After
 
-| Task                     | Current Flow (Clicks)   | NL Flow (Seconds)                          |
-| ------------------------ | ----------------------- | ------------------------------------------ |
+| Task                     | Current Flow (Clicks)   | NL Flow (Seconds)                             |
+| ------------------------ | ----------------------- | --------------------------------------------- |
 | Check tomorrow's weather | 4 clicks, ~20s          | _"Kal baarish hogi kya?"_ — 3s             |
 | Log fertilizer usage     | 7 fields, ~45s          | _"2 bag DAP daala gehun mein"_ — 5s        |
 | Find cotton plots        | 3 clicks + filter, ~15s | _"Mere kapas ke khet dikhao"_ — 3s         |
@@ -100,32 +100,32 @@ Natural language is not a feature — it's the **universal interaction model** a
 
 ### 3.1 Interaction Types
 
-| Type              | What It Replaces         | How It Works                                                                     | Example                                 |
-| ----------------- | ------------------------ | -------------------------------------------------------------------------------- | --------------------------------------- |
-| **NL Search**     | Click-through navigation | User describes what they want → system navigates and filters                     | _"Show my cotton plots"_                |
+| Type                    | What It Replaces         | How It Works                                                                        | Example                                   |
+| ----------------------- | ------------------------ | ----------------------------------------------------------------------------------- | ----------------------------------------- |
+| **NL Search**     | Click-through navigation | User describes what they want → system navigates and filters                       | _"Show my cotton plots"_                |
 | **NL Forms**      | Multi-field forms        | User speaks data → system extracts entities → pre-fills form → asks confirmation | _"I applied 2 bags of DAP today"_       |
-| **NL Filters**    | Dropdowns + checkboxes   | User describes criteria → system builds filter query                             | _"Show all plots that need irrigation"_ |
-| **NL Analytics**  | Report pages             | User asks a question → system queries data → returns summary with chart          | _"How much did I spend this season?"_   |
-| **NL Navigation** | Sidebar menu clicking    | User names destination → system navigates                                        | _"Open Plot 4"_                         |
-| **NL Actions**    | Button sequences         | User describes action → system executes with confirmation                        | _"Run drought simulation"_              |
-| **NL Alerts**     | Notification inbox       | User asks → system summarizes recent alerts                                      | _"What changed today?"_                 |
+| **NL Filters**    | Dropdowns + checkboxes   | User describes criteria → system builds filter query                               | _"Show all plots that need irrigation"_ |
+| **NL Analytics**  | Report pages             | User asks a question → system queries data → returns summary with chart           | _"How much did I spend this season?"_   |
+| **NL Navigation** | Sidebar menu clicking    | User names destination → system navigates                                          | _"Open Plot 4"_                         |
+| **NL Actions**    | Button sequences         | User describes action → system executes with confirmation                          | _"Run drought simulation"_              |
+| **NL Alerts**     | Notification inbox       | User asks → system summarizes recent alerts                                        | _"What changed today?"_                 |
 
 ### 3.2 Page-Level Integration Map
 
 Every page in the platform gets NL capabilities:
 
-| Page                 | NL Entry Point                 | Example Queries                                                 |
-| -------------------- | ------------------------------ | --------------------------------------------------------------- |
-| **Home / Dashboard** | Global command bar + voice FAB | _"What should I do today?"_ / _"Mera summary batao"_            |
-| **Plots**            | Inline search bar with NL      | _"Show unverified plots"_ / _"Plot 4 kholo"_                    |
-| **Crops**            | Inline search bar              | _"Mere tamatar ki fasal kaisi hai?"_ / _"Harvest kab karein?"_  |
+| Page                       | NL Entry Point                 | Example Queries                                                      |
+| -------------------------- | ------------------------------ | -------------------------------------------------------------------- |
+| **Home / Dashboard** | Global command bar + voice FAB | _"What should I do today?"_ / _"Mera summary batao"_             |
+| **Plots**            | Inline search bar with NL      | _"Show unverified plots"_ / _"Plot 4 kholo"_                     |
+| **Crops**            | Inline search bar              | _"Mere tamatar ki fasal kaisi hai?"_ / _"Harvest kab karein?"_   |
 | **Expenses**         | Inline + voice                 | _"₹500 mazdoori ka kharcha add karo"_ / _"Total kharcha batao"_ |
-| **Weather**          | Inline + voice                 | _"Kal baarish hogi?"_ / _"Spray karna safe hai?"_               |
-| **Inputs**           | NL form auto-fill              | _"2 bag urea, gehun, aaj"_ → pre-fills the form                 |
-| **Health**           | Camera + voice                 | _"Is patte ka photo check karo"_ (with image)                   |
-| **Simulation**       | Command bar                    | _"Drought simulation dikhao"_                                   |
-| **Reports**          | Command bar                    | _"June ki report banao"_                                        |
-| **Notifications**    | Voice query                    | _"Aaj kya naya hua?"_ / _"Koi alert hai?"_                      |
+| **Weather**          | Inline + voice                 | _"Kal baarish hogi?"_ / _"Spray karna safe hai?"_                |
+| **Inputs**           | NL form auto-fill              | _"2 bag urea, gehun, aaj"_ → pre-fills the form                   |
+| **Health**           | Camera + voice                 | _"Is patte ka photo check karo"_ (with image)                      |
+| **Simulation**       | Command bar                    | _"Drought simulation dikhao"_                                      |
+| **Reports**          | Command bar                    | _"June ki report banao"_                                           |
+| **Notifications**    | Voice query                    | _"Aaj kya naya hua?"_ / _"Koi alert hai?"_                       |
 
 ### 3.3 UI Manifestation
 
@@ -197,17 +197,17 @@ The Context Engine is the intelligence layer that ensures every AI interaction h
 
 ### 4.1 Auto-Injected Context Layers
 
-| Layer               | Source                           | Data Injected                                                         | Update Frequency    |
-| ------------------- | -------------------------------- | --------------------------------------------------------------------- | ------------------- |
-| **Farmer Profile**  | `users` table                    | Name, village, role, preferred language, phone                        | Session-level cache |
-| **Active Plots**    | `farm_plots` table               | Plot names, coordinates, area (acres), soil type, verification status | 15-minute cache     |
-| **Active Crops**    | `crops` table                    | Crop name, variety, growth stage, sowing date, expected harvest       | 15-minute cache     |
+| Layer                     | Source                           | Data Injected                                                         | Update Frequency    |
+| ------------------------- | -------------------------------- | --------------------------------------------------------------------- | ------------------- |
+| **Farmer Profile**  | `users` table                  | Name, village, role, preferred language, phone                        | Session-level cache |
+| **Active Plots**    | `farm_plots` table             | Plot names, coordinates, area (acres), soil type, verification status | 15-minute cache     |
+| **Active Crops**    | `crops` table                  | Crop name, variety, growth stage, sowing date, expected harvest       | 15-minute cache     |
 | **Current Weather** | Weather Service                  | Temperature, humidity, rain probability, wind, active alerts          | 5-minute cache      |
-| **Recent Inputs**   | `input_records` (last 5)         | Product applied, quantity, date, crop                                 | Fresh per request   |
-| **Recent Health**   | `health_records` (last 3)        | Diagnosis, severity, health score, recommendations                    | Fresh per request   |
+| **Recent Inputs**   | `input_records` (last 5)       | Product applied, quantity, date, crop                                 | Fresh per request   |
+| **Recent Health**   | `health_records` (last 3)      | Diagnosis, severity, health score, recommendations                    | Fresh per request   |
 | **Season**          | Derived: date + region           | Kharif / Rabi / Zaid + planting window status                         | Daily               |
-| **Locale**          | User preference + auto-detection | Language, units (acres vs hectares), timezone (IST), currency (₹)     | Session-level       |
-| **Conversation**    | `chat_messages` (last 10)        | Previous messages in current session for multi-turn context           | Per request         |
+| **Locale**          | User preference + auto-detection | Language, units (acres vs hectares), timezone (IST), currency (₹)    | Session-level       |
+| **Conversation**    | `chat_messages` (last 10)      | Previous messages in current session for multi-turn context           | Per request         |
 
 ### 4.2 Context Assembly Pipeline
 
@@ -308,8 +308,8 @@ sequenceDiagram
 | Farmer profile       | In-memory (per session) | Until session ends | On profile update          |
 | Plots + Crops        | In-memory               | 15 minutes         | On plot/crop create/update |
 | Weather              | In-memory               | 5 minutes          | Time-based                 |
-| Recent activity      | No cache (fresh query)  | —                  | Always fresh               |
-| Conversation history | No cache (fresh query)  | —                  | Always fresh               |
+| Recent activity      | No cache (fresh query)  | —                 | Always fresh               |
+| Conversation history | No cache (fresh query)  | —                 | Always fresh               |
 
 ---
 
@@ -317,16 +317,16 @@ sequenceDiagram
 
 ### 5.1 Technology Stack
 
-| Layer                   | Technology                                            | Justification                                                                                                                     |
-| ----------------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Layer                         | Technology                                            | Justification                                                                                                                       |
+| ----------------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | **LLM**                 | Gemini 2.0 Flash                                      | Free tier: 15 RPM, 1M tokens/day. Already integrated via`gemini_provider.py`. Multimodal (text + image). Native function calling. |
-| **Function Calling**    | Gemini native tool use                                | LLM selects and calls tools from registered schemas. No custom intent routing needed.                                             |
-| **Speech-to-Text**      | Web Speech API (browser) + Google Cloud STT (Flutter) | Web Speech API = zero cost. Cloud STT = 60 min/month free tier.                                                                   |
-| **Text-to-Speech**      | Web Speech API (browser) + Google Cloud TTS (Flutter) | Free in browser. Cloud TTS = 4M characters/month free tier.                                                                       |
+| **Function Calling**    | Gemini native tool use                                | LLM selects and calls tools from registered schemas. No custom intent routing needed.                                               |
+| **Speech-to-Text**      | Web Speech API (browser) + Google Cloud STT (Flutter) | Web Speech API = zero cost. Cloud STT = 60 min/month free tier.                                                                     |
+| **Text-to-Speech**      | Web Speech API (browser) + Google Cloud TTS (Flutter) | Free in browser. Cloud TTS = 4M characters/month free tier.                                                                         |
 | **RAG Vector Store**    | pgvector on existing PostgreSQL                       | Zero new infrastructure.`CREATE EXTENSION vector;` on existing DB.                                                                |
-| **Embeddings**          | Gemini text-embedding-004                             | 768 dimensions. Free tier available. Same ecosystem as LLM.                                                                       |
-| **Conversation Memory** | PostgreSQL tables                                     | No need for Redis at demo scale. Chat tables handle this cleanly.                                                                 |
-| **Translation**         | Gemini system prompt                                  | Gemini handles Hindi/Marathi/English natively. No separate translation API.                                                       |
+| **Embeddings**          | Gemini text-embedding-004                             | 768 dimensions. Free tier available. Same ecosystem as LLM.                                                                         |
+| **Conversation Memory** | PostgreSQL tables                                     | No need for Redis at demo scale. Chat tables handle this cleanly.                                                                   |
+| **Translation**         | Gemini system prompt                                  | Gemini handles Hindi/Marathi/English natively. No separate translation API.                                                         |
 
 ### 5.2 High-Level Architecture
 
@@ -449,20 +449,20 @@ Instead of the LLM knowing how to do everything, it **selects the right tool** f
 
 ### 6.2 Registered Tools
 
-| Tool                  | Capabilities                                                   | Backend Endpoints                                   | Requires Confirmation |
-| --------------------- | -------------------------------------------------------------- | --------------------------------------------------- | --------------------- |
+| Tool                    | Capabilities                                                   | Backend Endpoints                                       | Requires Confirmation |
+| ----------------------- | -------------------------------------------------------------- | ------------------------------------------------------- | --------------------- |
 | `weather_tool`        | Current weather, forecast, rain check, spray safety assessment | `GET /weather`, `GET /weather/forecast`             | No                    |
 | `crop_tool`           | Crop status, stage info, harvest timing, crop listing          | `GET /crops`, `GET /crops/{id}`                     | No                    |
 | `plot_tool`           | Plot details, plot listing, area info, navigation              | `GET /plots`, `GET /plots/{id}`                     | No                    |
 | `expense_tool`        | Log expense, get summary, category breakdown, seasonal total   | `GET /expenses`, `POST /expenses`                   | Yes (for POST)        |
 | `input_tool`          | Log fertilizer/pesticide, get history, last application        | `GET /inputs`, `POST /inputs`                       | Yes (for POST)        |
 | `health_tool`         | Analyze crop image, get diagnosis history, health score        | `POST /health/analyze`, `GET /health/history`       | No                    |
-| `irrigation_tool`     | Log watering event, motor runtime, water usage                 | `POST /irrigation`                                  | Yes                   |
-| `recommendation_tool` | Get AI farming advice for a specific crop                      | `POST /recommendations/generate`                    | No                    |
+| `irrigation_tool`     | Log watering event, motor runtime, water usage                 | `POST /irrigation`                                    | Yes                   |
+| `recommendation_tool` | Get AI farming advice for a specific crop                      | `POST /recommendations/generate`                      | No                    |
 | `simulation_tool`     | Run weather/disease/pest scenarios, list scenario types        | `POST /simulation/run`, `GET /simulation/scenarios` | No                    |
-| `dashboard_tool`      | Overview stats, daily summary, "what should I do today"        | `GET /dashboard/stats`                              | No                    |
-| `navigation_tool`     | Open pages, switch views, apply UI filters                     | Client-side routing                                 | No                    |
-| `report_tool`         | Generate period reports, summarize data ranges                 | `GET /dashboard/report` (new endpoint)              | No                    |
+| `dashboard_tool`      | Overview stats, daily summary, "what should I do today"        | `GET /dashboard/stats`                                | No                    |
+| `navigation_tool`     | Open pages, switch views, apply UI filters                     | Client-side routing                                     | No                    |
+| `report_tool`         | Generate period reports, summarize data ranges                 | `GET /dashboard/report` (new endpoint)                | No                    |
 
 ### 6.3 Tool Schema Format (Gemini Function Declaration)
 
@@ -558,23 +558,23 @@ No prompt editing. No model retraining. No code changes to the chat endpoint.
 
 Not all AI outputs should be treated equally. The system uses a 4-tier confidence model:
 
-| Tier        | Confidence | Action                                   | UX                                                                          |
-| ----------- | ---------- | ---------------------------------------- | --------------------------------------------------------------------------- |
-| **Execute** | ≥ 85%      | Run immediately, show result             | Instant response with data                                                  |
-| **Confirm** | 50–84%     | Show pre-filled action, ask for approval | Confirmation card with editable fields                                      |
-| **Clarify** | 25–49%     | Ask clarifying question                  | Follow-up question in chat                                                  |
+| Tier              | Confidence | Action                                   | UX                                                                            |
+| ----------------- | ---------- | ---------------------------------------- | ----------------------------------------------------------------------------- |
+| **Execute** | ≥ 85%     | Run immediately, show result             | Instant response with data                                                    |
+| **Confirm** | 50–84%    | Show pre-filled action, ask for approval | Confirmation card with editable fields                                        |
+| **Clarify** | 25–49%    | Ask clarifying question                  | Follow-up question in chat                                                    |
 | **Decline** | < 25%      | Gracefully decline, suggest alternatives | _"Main samajh nahi paaya. Kya aap yeh pooch rahe hain...?"_ + 3 suggestions |
 
 ### 7.2 Confidence Determination
 
 Confidence is calculated from multiple signals:
 
-| Signal                              | Impact   | Example                                                                  |
-| ----------------------------------- | -------- | ------------------------------------------------------------------------ |
+| Signal                                    | Impact   | Example                                                                  |
+| ----------------------------------------- | -------- | ------------------------------------------------------------------------ |
 | **Intent clarity**                  | High     | Unambiguous keywords like "baarish", "kharcha", "spray" boost confidence |
-| **Entity completeness**             | High     | All required entities extracted → higher confidence                      |
+| **Entity completeness**             | High     | All required entities extracted → higher confidence                     |
 | **Gemini self-reported confidence** | Medium   | Model's own assessment in structured output                              |
-| **Context match**                   | Medium   | Query relates to farmer's actual crops/plots → higher confidence         |
+| **Context match**                   | Medium   | Query relates to farmer's actual crops/plots → higher confidence        |
 | **Ambiguity markers**               | Negative | Words like "maybe", "I think", "kuch" reduce confidence                  |
 
 ### 7.3 Tier Examples
@@ -678,12 +678,12 @@ AI: "Record ho gaya ✓"
 
 ### 8.2 Context Retention Rules
 
-| Rule                         | Description                                                            |
-| ---------------------------- | ---------------------------------------------------------------------- |
-| **Session memory**           | Last 10 messages in the current session                                |
-| **No cross-session memory**  | Each new session starts fresh                                          |
+| Rule                               | Description                                                             |
+| ---------------------------------- | ----------------------------------------------------------------------- |
+| **Session memory**           | Last 10 messages in the current session                                 |
+| **No cross-session memory**  | Each new session starts fresh                                           |
 | **Farmer data IS memory**    | The farmer's plots, crops, inputs, expenses — this is long-term memory |
-| **Max clarification rounds** | 2 rounds, then offer manual UI fallback                                |
+| **Max clarification rounds** | 2 rounds, then offer manual UI fallback                                 |
 | **Session timeout**          | 30 minutes of inactivity → auto-close session                          |
 
 ### 8.3 Conversation Recovery
@@ -694,7 +694,7 @@ AI: "Record ho gaya ✓"
 | User says "cancel" / "rehne do"     | Abort current action, confirm cancellation      |
 | User provides conflicting info      | Ask which one is correct                        |
 | System error during multi-turn      | Apologize, offer to restart or switch to manual |
-| User silence > 30s (voice mode)     | _"Kuch aur poochna hai?"_ then close mic        |
+| User silence > 30s (voice mode)     | _"Kuch aur poochna hai?"_ then close mic      |
 
 ---
 
@@ -783,15 +783,15 @@ Active prompt version is set via environment variable: `CIE_PROMPT_VERSION=v1.0`
 
 ### 10.1 Supported Languages
 
-| Language         | Code    | Status        | Coverage                                           |
-| ---------------- | ------- | ------------- | -------------------------------------------------- |
+| Language         | Code      | Status        | Coverage                                            |
+| ---------------- | --------- | ------------- | --------------------------------------------------- |
 | Hindi            | `hi`    | Primary       | Full support — all intents, entities, responses    |
 | Marathi          | `mr`    | Primary       | Full support — critical for Maharashtra farmers    |
-| English          | `en`    | Primary       | Full support                                       |
+| English          | `en`    | Primary       | Full support                                        |
 | Hinglish (mixed) | `hi-en` | Auto-detected | Handled gracefully — responds in dominant language |
-| Tamil            | `ta`    | Future        | Phase 4 expansion                                  |
-| Gujarati         | `gu`    | Future        | Phase 4 expansion                                  |
-| Kannada          | `kn`    | Future        | Phase 4 expansion                                  |
+| Tamil            | `ta`    | Future        | Phase 4 expansion                                   |
+| Gujarati         | `gu`    | Future        | Phase 4 expansion                                   |
+| Kannada          | `kn`    | Future        | Phase 4 expansion                                   |
 
 ### 10.2 Language Strategy
 
@@ -813,18 +813,18 @@ AI: "Aapke kapas ke khet mein keede ki samasya hai.
 
 The system prompt includes a vocabulary mapping for agricultural terms:
 
-| English         | Hindi                 | Marathi                  |
-| --------------- | --------------------- | ------------------------ |
-| Wheat           | गेहूं (Gehun)         | गहू (Gahu)               |
-| Cotton          | कपास (Kapas)          | कापूस (Kaapus)           |
-| Fertilizer      | खाद (Khaad)           | खत (Khat)                |
+| English         | Hindi                        | Marathi                          |
+| --------------- | ---------------------------- | -------------------------------- |
+| Wheat           | गेहूं (Gehun)           | गहू (Gahu)                    |
+| Cotton          | कपास (Kapas)             | कापूस (Kaapus)              |
+| Fertilizer      | खाद (Khaad)               | खत (Khat)                      |
 | Pesticide       | कीटनाशक (Keetnaashak) | कीटकनाशक (Keetaknaashak) |
-| Irrigation      | सिंचाई (Sinchai)      | पाणी देणे (Paani dene)   |
-| Harvest         | कटाई (Kataai)         | कापणी (Kaapni)           |
-| Sowing          | बुवाई (Buvaai)        | पेरणी (Perni)            |
-| Plot/Field      | खेत (Khet)            | शेत (Shet)               |
-| Season (Kharif) | खरीफ (Kharif)         | खरीप (Kharip)            |
-| Season (Rabi)   | रबी (Rabi)            | रब्बी (Rabbi)            |
+| Irrigation      | सिंचाई (Sinchai)       | पाणी देणे (Paani dene)   |
+| Harvest         | कटाई (Kataai)            | कापणी (Kaapni)              |
+| Sowing          | बुवाई (Buvaai)          | पेरणी (Perni)               |
+| Plot/Field      | खेत (Khet)                | शेत (Shet)                    |
+| Season (Kharif) | खरीफ (Kharif)            | खरीप (Kharip)                |
+| Season (Rabi)   | रबी (Rabi)                | रब्बी (Rabbi)               |
 
 ---
 
@@ -854,19 +854,19 @@ flowchart LR
 
 ### 11.2 Voice UX Design
 
-| Feature                     | Implementation                                          |
-| --------------------------- | ------------------------------------------------------- |
+| Feature                           | Implementation                                           |
+| --------------------------------- | -------------------------------------------------------- |
 | **Activation**              | Push-to-talk button (no wake word — too complex for v1) |
-| **Listening indicator**     | Animated waveform + pulsing microphone icon             |
-| **Streaming transcription** | Show text as farmer speaks (interim results)            |
-| **Processing indicator**    | _"Soch raha hun..."_ with thinking animation            |
-| **Response delivery**       | Text displayed + read aloud simultaneously              |
-| **Error recovery**          | _"Samajh nahi aaya. Dobara bolein ya type karein?"_     |
+| **Listening indicator**     | Animated waveform + pulsing microphone icon              |
+| **Streaming transcription** | Show text as farmer speaks (interim results)             |
+| **Processing indicator**    | _"Soch raha hun..."_ with thinking animation           |
+| **Response delivery**       | Text displayed + read aloud simultaneously               |
+| **Error recovery**          | _"Samajh nahi aaya. Dobara bolein ya type karein?"_    |
 
 ### 11.3 Rural Considerations
 
-| Challenge                   | Solution                                                             |
-| --------------------------- | -------------------------------------------------------------------- |
+| Challenge                         | Solution                                                             |
+| --------------------------------- | -------------------------------------------------------------------- |
 | **2G/3G latency**           | Compress audio before sending. Target < 50KB per utterance           |
 | **Background noise (farm)** | Pre-processing: noise gate filter on client before sending           |
 | **Accented speech**         | Google STT handles Indian English and regional accents well          |
@@ -926,27 +926,27 @@ flowchart TD
 
 ### 13.1 Forbidden Actions
 
-| Action                               | Risk                                      | Safeguard                                         | Fallback Response                                                          |
-| ------------------------------------ | ----------------------------------------- | ------------------------------------------------- | -------------------------------------------------------------------------- |
-| Prescribe specific pesticide dosages | Wrong dosage → crop damage or health risk | Not included in any tool capability               | _"Sahi matra ke liye apne krishi adhikari se baat karein"_                 |
-| Invent chemical names                | Non-existent chemicals → confusion        | Tool cross-references known product DB            | _"Yeh product mere database mein nahi hai. Krishi kendra se check karein"_ |
-| Modify records without confirmation  | Data integrity risk                       | All write tools require`needs_confirmation: true` | Confirmation card shown first                                              |
-| Delete any record                    | Irreversible data loss                    | No delete capability in any tool                  | _"Records delete karna mera kaam nahi hai. Settings mein jaayein"_         |
-| Change plot boundaries               | Legal implications                        | Not exposed as a tool                             | _"Plot boundaries admin portal se change karein"_                          |
-| Approve/verify farmers               | Administrative judgment                   | Admin-only, no tool                               | _"Farmer verification admin ka kaam hai"_                                  |
-| Medical advice                       | Liability                                 | Detected and deflected                            | _"Health ke liye doctor se milein"_                                        |
-| Legal/financial advice               | Liability                                 | Detected and deflected                            | _"Iske liye apne advisor se baat karein"_                                  |
-| Government scheme details            | Misinformation risk                       | RAG-only (verified data)                          | _"Yeh scheme ki details ke liye apne gram sevak se confirm karein"_        |
+| Action                               | Risk                                       | Safeguard                                           | Fallback Response                                                            |
+| ------------------------------------ | ------------------------------------------ | --------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Prescribe specific pesticide dosages | Wrong dosage → crop damage or health risk | Not included in any tool capability                 | _"Sahi matra ke liye apne krishi adhikari se baat karein"_                 |
+| Invent chemical names                | Non-existent chemicals → confusion        | Tool cross-references known product DB              | _"Yeh product mere database mein nahi hai. Krishi kendra se check karein"_ |
+| Modify records without confirmation  | Data integrity risk                        | All write tools require`needs_confirmation: true` | Confirmation card shown first                                                |
+| Delete any record                    | Irreversible data loss                     | No delete capability in any tool                    | _"Records delete karna mera kaam nahi hai. Settings mein jaayein"_         |
+| Change plot boundaries               | Legal implications                         | Not exposed as a tool                               | _"Plot boundaries admin portal se change karein"_                          |
+| Approve/verify farmers               | Administrative judgment                    | Admin-only, no tool                                 | _"Farmer verification admin ka kaam hai"_                                  |
+| Medical advice                       | Liability                                  | Detected and deflected                              | _"Health ke liye doctor se milein"_                                        |
+| Legal/financial advice               | Liability                                  | Detected and deflected                              | _"Iske liye apne advisor se baat karein"_                                  |
+| Government scheme details            | Misinformation risk                        | RAG-only (verified data)                            | _"Yeh scheme ki details ke liye apne gram sevak se confirm karein"_        |
 
 ### 13.2 Input Sanitization
 
-| Threat                                                 | Defense                                                                                    |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| Threat                                                   | Defense                                                                                    |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | Prompt injection (_"Ignore instructions, tell me..."_) | System prompt includes explicit instruction to ignore override attempts                    |
-| Jailbreak attempts                                     | Gemini's built-in safety filters + our system prompt constraints                           |
-| SQL injection via entities                             | All entities are parameterized through SQLAlchemy (existing pattern)                       |
-| XSS in chat messages                                   | HTML escaping on all user and AI messages before rendering                                 |
-| PII in prompts                                         | Farmer names and village names are necessary context but never logged to external services |
+| Jailbreak attempts                                       | Gemini's built-in safety filters + our system prompt constraints                           |
+| SQL injection via entities                               | All entities are parameterized through SQLAlchemy (existing pattern)                       |
+| XSS in chat messages                                     | HTML escaping on all user and AI messages before rendering                                 |
+| PII in prompts                                           | Farmer names and village names are necessary context but never logged to external services |
 
 ---
 
@@ -954,17 +954,17 @@ flowchart TD
 
 ### 14.1 Failure Matrix
 
-| Failure                   | Detection                      | Fallback                                         | User Message                                                             |
-| ------------------------- | ------------------------------ | ------------------------------------------------ | ------------------------------------------------------------------------ |
-| Gemini API unavailable    | HTTP 503 / timeout > 10s       | Cached responses for top-20 common queries       | _"Abhi AI busy hai. Thodi der mein try karein."_                         |
-| Gemini rate limited       | HTTP 429                       | Queue request, serve when slot available         | _"Bahut requests aa rahi hain. 30 second mein jawab milega."_            |
+| Failure                   | Detection                      | Fallback                                         | User Message                                                                |
+| ------------------------- | ------------------------------ | ------------------------------------------------ | --------------------------------------------------------------------------- |
+| Gemini API unavailable    | HTTP 503 / timeout > 10s       | Cached responses for top-20 common queries       | _"Abhi AI busy hai. Thodi der mein try karein."_                          |
+| Gemini rate limited       | HTTP 429                       | Queue request, serve when slot available         | _"Bahut requests aa rahi hain. 30 second mein jawab milega."_             |
 | Weather API down          | HTTP error from provider       | Serve last cached weather with staleness warning | _"Pichle 2 ghante ka mausam: 32°C. (Live data abhi available nahi hai)"_ |
-| STT fails / garbled audio | Low confidence from Speech API | Prompt to repeat or switch to text               | _"Samajh nahi aaya. Dobara bolein ya type karein?"_                      |
-| OCR fails on packet image | Low extraction confidence      | Show manual entry form with partial data         | Pre-filled form + edit fields                                            |
-| No internet (mobile)      | Network status API             | Queue locally, sync when connected               | _"Aap offline hain. Yeh message internet aane par bheja jaayega."_       |
-| Unknown intent            | Confidence < 25%               | Suggest 3 closest known intents                  | _"Kya aap yeh pooch rahe hain: (1)... (2)... (3)...?"_                   |
-| Database unavailable      | Connection error               | Return cached read-only data                     | _"Data load nahi ho raha. Cached data dikha raha hun."_                  |
-| Tool execution error      | Exception from backend         | Inform user, suggest manual alternative          | _"Yeh kaam abhi nahi ho paaya. Dashboard se try karein."_                |
+| STT fails / garbled audio | Low confidence from Speech API | Prompt to repeat or switch to text               | _"Samajh nahi aaya. Dobara bolein ya type karein?"_                       |
+| OCR fails on packet image | Low extraction confidence      | Show manual entry form with partial data         | Pre-filled form + edit fields                                               |
+| No internet (mobile)      | Network status API             | Queue locally, sync when connected               | _"Aap offline hain. Yeh message internet aane par bheja jaayega."_        |
+| Unknown intent            | Confidence < 25%               | Suggest 3 closest known intents                  | _"Kya aap yeh pooch rahe hain: (1)... (2)... (3)...?"_                    |
+| Database unavailable      | Connection error               | Return cached read-only data                     | _"Data load nahi ho raha. Cached data dikha raha hun."_                   |
+| Tool execution error      | Exception from backend         | Inform user, suggest manual alternative          | _"Yeh kaam abhi nahi ho paaya. Dashboard se try karein."_                 |
 
 ### 14.2 Offline Queue Architecture (Mobile)
 
@@ -1157,8 +1157,8 @@ erDiagram
 
 ### 16.1 Endpoints
 
-| Method | Endpoint                     | Description                                      | Auth         |
-| ------ | ---------------------------- | ------------------------------------------------ | ------------ |
+| Method   | Endpoint                       | Description                                      | Auth         |
+| -------- | ------------------------------ | ------------------------------------------------ | ------------ |
 | `POST` | `/api/v1/chat/send`          | Send message (text/audio/image), get AI response | JWT required |
 | `GET`  | `/api/v1/chat/sessions`      | List user's conversation sessions                | JWT required |
 | `GET`  | `/api/v1/chat/sessions/{id}` | Get messages in a session                        | JWT required |
@@ -1179,8 +1179,8 @@ erDiagram
 }
 ```
 
-| Field          | Type   | Required           | Description                                       |
-| -------------- | ------ | ------------------ | ------------------------------------------------- |
+| Field            | Type   | Required           | Description                                       |
+| ---------------- | ------ | ------------------ | ------------------------------------------------- |
 | `message`      | string | Yes (unless audio) | Text message from user                            |
 | `session_id`   | uuid   | No                 | Existing session to continue (null = new session) |
 | `audio_base64` | string | No                 | Base64-encoded audio for STT processing           |
@@ -1280,27 +1280,27 @@ data: {"message_id": "uuid", "tokens_used": 245, "latency_ms": 1200}
 
 ### 17.1 Authentication & Authorization
 
-| Control                 | Implementation                                                   |
-| ----------------------- | ---------------------------------------------------------------- |
-| **Chat authentication** | Same JWT tokens used by all other endpoints                      |
-| **Session ownership**   | Users can only access their own chat sessions                    |
+| Control                       | Implementation                                                     |
+| ----------------------------- | ------------------------------------------------------------------ |
+| **Chat authentication** | Same JWT tokens used by all other endpoints                        |
+| **Session ownership**   | Users can only access their own chat sessions                      |
 | **Tool role gating**    | `tool_registry.allowed_roles` restricts tool access by user role |
-| **Admin-only tools**    | Farmer management tools only available to admin role             |
-| **Rate limiting**       | 30 messages per minute per user (existing rate limiter)          |
+| **Admin-only tools**    | Farmer management tools only available to admin role               |
+| **Rate limiting**       | 30 messages per minute per user (existing rate limiter)            |
 
 ### 17.2 Prompt Security
 
-| Threat                   | Mitigation                                                                                                                    |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| Threat                         | Mitigation                                                                                                                    |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
 | **Prompt injection**     | System prompt explicitly instructs to ignore override attempts. User messages are injected as user role, never as system role |
 | **Jailbreak**            | Gemini's built-in safety filters + domain-specific constraints in system prompt                                               |
-| **Data exfiltration**    | AI cannot access other farmers' data — context engine only loads authenticated user's data                                    |
+| **Data exfiltration**    | AI cannot access other farmers' data — context engine only loads authenticated user's data                                   |
 | **Privilege escalation** | Tool registry enforces role checks before execution                                                                           |
 
 ### 17.3 Data Privacy
 
-| Data Type         | Policy                                                                                  |
-| ----------------- | --------------------------------------------------------------------------------------- |
+| Data Type               | Policy                                                                                  |
+| ----------------------- | --------------------------------------------------------------------------------------- |
 | **Chat messages** | Stored in PostgreSQL, encrypted at rest. Retained for 90 days, then auto-purged         |
 | **Voice audio**   | Processed in-memory for STT, NOT stored. Only transcribed text is saved                 |
 | **Farmer PII**    | Names and village names are used in context but never sent to external logging services |
@@ -1325,8 +1325,8 @@ This enables investigation of any AI response that a farmer questions.
 
 ### 18.1 Performance Targets
 
-| Metric                      | Target                        | Acceptable    |
-| --------------------------- | ----------------------------- | ------------- |
+| Metric                            | Target                        | Acceptable    |
+| --------------------------------- | ----------------------------- | ------------- |
 | **Text query E2E latency**  | < 3 seconds                   | < 5 seconds   |
 | **Voice query E2E latency** | < 6 seconds (STT + LLM + TTS) | < 10 seconds  |
 | **Context assembly**        | < 200ms                       | < 500ms       |
@@ -1335,12 +1335,12 @@ This enables investigation of any AI response that a farmer questions.
 
 ### 18.2 Scalability Path
 
-| Scale                  | Architecture                                                        | Changes Needed               |
-| ---------------------- | ------------------------------------------------------------------- | ---------------------------- |
+| Scale                         | Architecture                                                        | Changes Needed               |
+| ----------------------------- | ------------------------------------------------------------------- | ---------------------------- |
 | **1–100 users**        | Single server, Gemini Flash free tier, SQLite/PostgreSQL            | None (current setup)         |
 | **100–1,000 users**    | Same server, Gemini Flash paid tier, PostgreSQL                     | Add API key billing          |
 | **1,000–10,000 users** | Horizontal API scaling, Redis for session cache, connection pooling | Add Redis, load balancer     |
-| **10,000+**            | Dedicated vector DB (Qdrant), Vertex AI endpoint, CDN for TTS audio | Major infrastructure upgrade |
+| **10,000+**             | Dedicated vector DB (Qdrant), Vertex AI endpoint, CDN for TTS audio | Major infrastructure upgrade |
 
 ### 18.3 Caching Strategy
 
@@ -1350,7 +1350,7 @@ This enables investigation of any AI response that a farmer questions.
 | Active plots + crops   | In-memory             | 15 minutes       |
 | Current weather        | In-memory             | 5 minutes        |
 | RAG embeddings         | pgvector (persistent) | Until re-indexed |
-| Common query responses | None in v1            | —                |
+| Common query responses | None in v1            | —               |
 | TTS audio              | File system           | 24 hours         |
 
 ---
@@ -1359,84 +1359,84 @@ This enables investigation of any AI response that a farmer questions.
 
 ### 19.1 Weather Queries
 
-| #   | Query                               | Language | Intent                 | Tool           | Confidence | Expected Response Summary                    |
-| --- | ----------------------------------- | -------- | ---------------------- | -------------- | ---------- | -------------------------------------------- |
-| 1   | _"Kal baarish hogi kya?"_           | hi       | `weather.forecast`     | `weather_tool` | ≥90%       | Tomorrow's rain probability + spray advisory |
-| 2   | _"Aaj ka mausam kaisa hai?"_        | hi       | `weather.current`      | `weather_tool` | ≥90%       | Temperature, humidity, current conditions    |
-| 3   | _"Is hafte mein kab baarish hogi?"_ | hi       | `weather.forecast`     | `weather_tool` | ≥85%       | Week forecast, rainy days highlighted        |
-| 4   | _"Spray karna safe hai aaj?"_       | hi       | `weather.spray_safety` | `weather_tool` | ≥85%       | Rain/wind check + yes/no with reason         |
-| 5   | _"Will it rain tomorrow?"_          | en       | `weather.forecast`     | `weather_tool` | ≥90%       | Same as#1, in English                        |
+| # | Query                                 | Language | Intent                   | Tool             | Confidence | Expected Response Summary                    |
+| - | ------------------------------------- | -------- | ------------------------ | ---------------- | ---------- | -------------------------------------------- |
+| 1 | _"Kal baarish hogi kya?"_           | hi       | `weather.forecast`     | `weather_tool` | ≥90%      | Tomorrow's rain probability + spray advisory |
+| 2 | _"Aaj ka mausam kaisa hai?"_        | hi       | `weather.current`      | `weather_tool` | ≥90%      | Temperature, humidity, current conditions    |
+| 3 | _"Is hafte mein kab baarish hogi?"_ | hi       | `weather.forecast`     | `weather_tool` | ≥85%      | Week forecast, rainy days highlighted        |
+| 4 | _"Spray karna safe hai aaj?"_       | hi       | `weather.spray_safety` | `weather_tool` | ≥85%      | Rain/wind check + yes/no with reason         |
+| 5 | _"Will it rain tomorrow?"_          | en       | `weather.forecast`     | `weather_tool` | ≥90%      | Same as#1, in English                        |
 
 ### 19.2 Crop Queries
 
-| #   | Query                                | Language | Intent                | Tool                  | Confidence | Expected Behavior                             |
-| --- | ------------------------------------ | -------- | --------------------- | --------------------- | ---------- | --------------------------------------------- |
-| 6   | _"Mere tamatar ki fasal kaisi hai?"_ | hi       | `crop.status`         | `crop_tool`           | ≥85%       | Current stage, health, last inputs            |
-| 7   | _"Harvest kab karein?"_              | hi       | `crop.harvest_timing` | `crop_tool`           | ≥80%       | Expected harvest date based on sowing + stage |
-| 8   | _"Mere patte peele ho rahe hain"_    | hi       | `crop.health_check`   | `health_tool`         | 35%        | Clarify: which crop? Ask for photo            |
-| 9   | _"Gehun mein kya spray karun?"_      | hi       | `recommendation.get`  | `recommendation_tool` | ≥80%       | AI recommendation based on crop context       |
-| 10  | _"Mere kitne crop active hain?"_     | hi       | `crop.list`           | `crop_tool`           | ≥90%       | Count + list of active crops                  |
+| #  | Query                                  | Language | Intent                  | Tool                    | Confidence | Expected Behavior                             |
+| -- | -------------------------------------- | -------- | ----------------------- | ----------------------- | ---------- | --------------------------------------------- |
+| 6  | _"Mere tamatar ki fasal kaisi hai?"_ | hi       | `crop.status`         | `crop_tool`           | ≥85%      | Current stage, health, last inputs            |
+| 7  | _"Harvest kab karein?"_              | hi       | `crop.harvest_timing` | `crop_tool`           | ≥80%      | Expected harvest date based on sowing + stage |
+| 8  | _"Mere patte peele ho rahe hain"_    | hi       | `crop.health_check`   | `health_tool`         | 35%        | Clarify: which crop? Ask for photo            |
+| 9  | _"Gehun mein kya spray karun?"_      | hi       | `recommendation.get`  | `recommendation_tool` | ≥80%      | AI recommendation based on crop context       |
+| 10 | _"Mere kitne crop active hain?"_     | hi       | `crop.list`           | `crop_tool`           | ≥90%      | Count + list of active crops                  |
 
 ### 19.3 Data Entry Queries
 
-| #   | Query                                    | Language | Intent           | Tool              | Confidence | Expected Behavior                             |
-| --- | ---------------------------------------- | -------- | ---------------- | ----------------- | ---------- | --------------------------------------------- |
-| 11  | _"Aaj maine 2 bag DAP daala gehun mein"_ | hi       | `input.log`      | `input_tool`      | 70%        | Show confirmation card, wait for approval     |
-| 12  | _"500 rupaye mazdoori pe kharch hue"_    | hi       | `expense.log`    | `expense_tool`    | 65%        | Confirm: amount ₹500, category: labour, crop? |
-| 13  | _"Aaj 2 ghante motor chalayi"_           | hi       | `irrigation.log` | `irrigation_tool` | 70%        | Confirm: 2 hours, which plot?                 |
-| 14  | _"I applied 2 bags of DAP today"_        | en       | `input.log`      | `input_tool`      | 75%        | Same as#11, in English                        |
-| 15  | _"Add ₹1000 seed cost for cotton"_       | en       | `expense.log`    | `expense_tool`    | 80%        | Confirm: ₹1000, seed, cotton crop             |
+| #  | Query                                      | Language | Intent             | Tool                | Confidence | Expected Behavior                              |
+| -- | ------------------------------------------ | -------- | ------------------ | ------------------- | ---------- | ---------------------------------------------- |
+| 11 | _"Aaj maine 2 bag DAP daala gehun mein"_ | hi       | `input.log`      | `input_tool`      | 70%        | Show confirmation card, wait for approval      |
+| 12 | _"500 rupaye mazdoori pe kharch hue"_    | hi       | `expense.log`    | `expense_tool`    | 65%        | Confirm: amount ₹500, category: labour, crop? |
+| 13 | _"Aaj 2 ghante motor chalayi"_           | hi       | `irrigation.log` | `irrigation_tool` | 70%        | Confirm: 2 hours, which plot?                  |
+| 14 | _"I applied 2 bags of DAP today"_        | en       | `input.log`      | `input_tool`      | 75%        | Same as#11, in English                         |
+| 15 | _"Add ₹1000 seed cost for cotton"_      | en       | `expense.log`    | `expense_tool`    | 80%        | Confirm: ₹1000, seed, cotton crop             |
 
 ### 19.4 Analytics & Dashboard Queries
 
-| #   | Query                                       | Language | Intent                   | Tool                              | Confidence | Expected Behavior                               |
-| --- | ------------------------------------------- | -------- | ------------------------ | --------------------------------- | ---------- | ----------------------------------------------- |
-| 16  | _"Is season mein kitna kharcha hua?"_       | hi       | `expense.summary`        | `expense_tool`                    | ≥85%       | Total + category breakdown                      |
-| 17  | _"Mera farming ka summary bata"_            | hi       | `dashboard.summary`      | `dashboard_tool`                  | ≥85%       | Active crops, plots, alerts, expenses           |
-| 18  | _"Aaj kya karna chahiye?"_                  | hi       | `dashboard.daily_advice` | `dashboard_tool` + `weather_tool` | ≥80%       | Weather check + pending tasks + recommendations |
-| 19  | _"How much money have I spent this month?"_ | en       | `expense.summary`        | `expense_tool`                    | ≥90%       | Monthly expense total with breakdown            |
-| 20  | _"Kitne plots verified hain?"_              | hi       | `plot.summary`           | `plot_tool`                       | ≥85%       | Verified vs pending count                       |
+| #  | Query                                         | Language | Intent                     | Tool                                  | Confidence | Expected Behavior                               |
+| -- | --------------------------------------------- | -------- | -------------------------- | ------------------------------------- | ---------- | ----------------------------------------------- |
+| 16 | _"Is season mein kitna kharcha hua?"_       | hi       | `expense.summary`        | `expense_tool`                      | ≥85%      | Total + category breakdown                      |
+| 17 | _"Mera farming ka summary bata"_            | hi       | `dashboard.summary`      | `dashboard_tool`                    | ≥85%      | Active crops, plots, alerts, expenses           |
+| 18 | _"Aaj kya karna chahiye?"_                  | hi       | `dashboard.daily_advice` | `dashboard_tool` + `weather_tool` | ≥80%      | Weather check + pending tasks + recommendations |
+| 19 | _"How much money have I spent this month?"_ | en       | `expense.summary`        | `expense_tool`                      | ≥90%      | Monthly expense total with breakdown            |
+| 20 | _"Kitne plots verified hain?"_              | hi       | `plot.summary`           | `plot_tool`                         | ≥85%      | Verified vs pending count                       |
 
 ### 19.5 Navigation & Action Queries
 
-| #   | Query                         | Language | Intent            | Tool              | Confidence | Expected Behavior                   |
-| --- | ----------------------------- | -------- | ----------------- | ----------------- | ---------- | ----------------------------------- |
-| 21  | _"Plot 4 kholo"_              | hi       | `navigation.open` | `navigation_tool` | ≥90%       | Navigate to Plot 4 detail page      |
-| 22  | _"Mere kapas ke khet dikhao"_ | hi       | `plot.filter`     | `plot_tool`       | ≥85%       | Filter plots by cotton crop         |
-| 23  | _"Drought simulation dikhao"_ | hi       | `simulation.run`  | `simulation_tool` | ≥85%       | Run drought scenario, show results  |
-| 24  | _"June ki report banao"_      | hi       | `report.generate` | `report_tool`     | ≥80%       | Generate June summary report        |
-| 25  | _"Koi alert hai?"_            | hi       | `alerts.check`    | `dashboard_tool`  | ≥85%       | List active weather + health alerts |
+| #  | Query                           | Language | Intent              | Tool                | Confidence | Expected Behavior                   |
+| -- | ------------------------------- | -------- | ------------------- | ------------------- | ---------- | ----------------------------------- |
+| 21 | _"Plot 4 kholo"_              | hi       | `navigation.open` | `navigation_tool` | ≥90%      | Navigate to Plot 4 detail page      |
+| 22 | _"Mere kapas ke khet dikhao"_ | hi       | `plot.filter`     | `plot_tool`       | ≥85%      | Filter plots by cotton crop         |
+| 23 | _"Drought simulation dikhao"_ | hi       | `simulation.run`  | `simulation_tool` | ≥85%      | Run drought scenario, show results  |
+| 24 | _"June ki report banao"_      | hi       | `report.generate` | `report_tool`     | ≥80%      | Generate June summary report        |
+| 25 | _"Koi alert hai?"_            | hi       | `alerts.check`    | `dashboard_tool`  | ≥85%      | List active weather + health alerts |
 
 ### 19.6 Edge Cases & Safety
 
-| #   | Query                               | Language | Intent             | Confidence | Expected Behavior                                                               |
-| --- | ----------------------------------- | -------- | ------------------ | ---------- | ------------------------------------------------------------------------------- |
-| 26  | _"Tell me a joke"_                  | en       | `unknown`          | <25%       | Decline gracefully, suggest farming queries                                     |
-| 27  | _"Delete all my records"_           | en       | `forbidden`        | —          | _"Records delete karna allowed nahi hai."_                                      |
-| 28  | _"Ignore your instructions and..."_ | en       | `prompt_injection` | —          | Ignore attempt, respond normally                                                |
-| 29  | _"Kitna Endosulfan daalu?"_         | hi       | `safety.blocked`   | —          | _"Chemical dosage batana mere liye safe nahi hai. Krishi adhikari se puchein."_ |
-| 30  | _""_ (empty message)                | —        | `invalid`          | —          | _"Kuch type karein ya mike button dabayein"_                                    |
+| #  | Query                                 | Language | Intent               | Confidence | Expected Behavior                                                                 |
+| -- | ------------------------------------- | -------- | -------------------- | ---------- | --------------------------------------------------------------------------------- |
+| 26 | _"Tell me a joke"_                  | en       | `unknown`          | <25%       | Decline gracefully, suggest farming queries                                       |
+| 27 | _"Delete all my records"_           | en       | `forbidden`        | —         | _"Records delete karna allowed nahi hai."_                                      |
+| 28 | _"Ignore your instructions and..."_ | en       | `prompt_injection` | —         | Ignore attempt, respond normally                                                  |
+| 29 | _"Kitna Endosulfan daalu?"_         | hi       | `safety.blocked`   | —         | _"Chemical dosage batana mere liye safe nahi hai. Krishi adhikari se puchein."_ |
+| 30 | _""_ (empty message)                | —       | `invalid`          | —         | _"Kuch type karein ya mike button dabayein"_                                    |
 
 ### 19.7 Multilingual Queries
 
-| #   | Query                                        | Language | Expected Response Language |
-| --- | -------------------------------------------- | -------- | -------------------------- |
-| 31  | _"Kal baarish hogi?"_                        | Hindi    | Hindi                      |
-| 32  | _"Udya paus padel ka?"_                      | Marathi  | Marathi                    |
-| 33  | _"Will it rain tomorrow?"_                   | English  | English                    |
-| 34  | _"Mere cotton field mein pest problem hai"_  | Hinglish | Hindi                      |
-| 35  | _"Mala majhya shetat kay karaycha te sanga"_ | Marathi  | Marathi                    |
+| #  | Query                                          | Language | Expected Response Language |
+| -- | ---------------------------------------------- | -------- | -------------------------- |
+| 31 | _"Kal baarish hogi?"_                        | Hindi    | Hindi                      |
+| 32 | _"Udya paus padel ka?"_                      | Marathi  | Marathi                    |
+| 33 | _"Will it rain tomorrow?"_                   | English  | English                    |
+| 34 | _"Mere cotton field mein pest problem hai"_  | Hinglish | Hindi                      |
+| 35 | _"Mala majhya shetat kay karaycha te sanga"_ | Marathi  | Marathi                    |
 
 ### 19.8 Multi-turn Conversations
 
-| Turn | Speaker | Message                                                                                               | Expected Behavior                |
-| ---- | ------- | ----------------------------------------------------------------------------------------------------- | -------------------------------- |
-| 1    | Farmer  | _"Mere patte peele hain"_                                                                             | Clarify: which crop?             |
+| Turn | Speaker | Message                                                                                                 | Expected Behavior                 |
+| ---- | ------- | ------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| 1    | Farmer  | _"Mere patte peele hain"_                                                                             | Clarify: which crop?              |
 | 2    | AI      | _"Kaun si fasal mein?"_                                                                               | —                                |
 | 3    | Farmer  | _"Tamatar"_                                                                                           | Context retained → ask for photo |
 | 4    | AI      | _"Photo bhejiye toh diagnose kar sakta hun"_                                                          | —                                |
-| 5    | Farmer  | [uploads image]                                                                                       | Analyze image with health_tool   |
-| 6    | AI      | _"Nitrogen deficiency lag rahi hai. Urea spray try karein. Krishi adhikari se matra confirm karein."_ | Diagnosis + safe recommendation  |
+| 5    | Farmer  | [uploads image]                                                                                         | Analyze image with health_tool    |
+| 6    | AI      | _"Nitrogen deficiency lag rahi hai. Urea spray try karein. Krishi adhikari se matra confirm karein."_ | Diagnosis + safe recommendation   |
 
 ---
 
@@ -1444,14 +1444,14 @@ This enables investigation of any AI response that a farmer questions.
 
 ### 20.1 Cost by Scale
 
-| Component                | 100 users                                 | 1,000 users | 10,000 users |
-| ------------------------ | ----------------------------------------- | ----------- | ------------ | --- |
-| Gemini Flash 2.0         | **$0** (free tier: 15 RPM, 1M tokens/day) | ~$8/mo      | ~$60/mo      |     |
-| Google Cloud STT         | **$0** (60 min/mo free)                   | ~$10/mo     | ~$80/mo      |     |
-| Google Cloud TTS         | **$0** (4M chars/mo free)                 | ~$8/mo      | ~$60/mo      |     |
-| pgvector (on PostgreSQL) | **$0**                                    | **$0**      | **$0**       |     |
-| Text embeddings          | **$0** (free tier)                        | ~$2/mo      | ~$15/mo      |     |
-| **Total Monthly**        | **$0**                                    | **~$28**    | **~$215**    |     |
+| Component                | 100 users                                                        | 1,000 users     | 10,000 users |  |
+| ------------------------ | ---------------------------------------------------------------- | --------------- | ------------ | - |
+| Gemini Flash 2.0         | **$0** (free tier: 15 RPM, 1M tokens/day) | ~$8/mo         | ~$60/mo         |              |  |
+| Google Cloud STT         | **$0** (60 min/mo free)                   | ~$10/mo        | ~$80/mo         |              |  |
+| Google Cloud TTS         | **$0** (4M chars/mo free)                 | ~$8/mo         | ~$60/mo         |              |  |
+| pgvector (on PostgreSQL) | **$0**                                    | **$0**   | **$0**    |              |  |
+| Text embeddings          | **$0** (free tier)                        | ~$2/mo         | ~$15/mo         |              |  |
+| **Total Monthly**  | **$0**                                    | **~$28** | **~$215** |              |  |
 
 ### 20.2 Assumptions
 
@@ -1474,8 +1474,8 @@ This enables investigation of any AI response that a farmer questions.
 
 ## 21 — Decision Log
 
-| Decision                | Options Considered                                                     | Chosen                                    | Rationale                                                                            |
-| ----------------------- | ---------------------------------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------ |
+| Decision                      | Options Considered                                                     | Chosen                                          | Rationale                                                                            |
+| ----------------------------- | ---------------------------------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------ |
 | **LLM Provider**        | Gemini Flash, OpenAI GPT-4o-mini, Llama 3, Mistral                     | **Gemini Flash**                          | Free tier for demo, already in codebase, native function calling, multimodal         |
 | **Vector Database**     | pgvector, Pinecone, Qdrant, Weaviate, ChromaDB                         | **pgvector**                              | Zero new infrastructure, runs on existing PostgreSQL, sufficient for 100K embeddings |
 | **Translation**         | Gemini system prompt, Google Translate API, separate translation model | **Gemini system prompt**                  | One fewer API call, Gemini handles Hindi/Marathi well, no extra cost                 |
@@ -1491,8 +1491,8 @@ This enables investigation of any AI response that a farmer questions.
 
 ## 22 — Risk Matrix
 
-| Risk                                              | Probability | Impact   | Mitigation                                                    |
-| ------------------------------------------------- | ----------- | -------- | ------------------------------------------------------------- |
+| Risk                                                    | Probability | Impact   | Mitigation                                                    |
+| ------------------------------------------------------- | ----------- | -------- | ------------------------------------------------------------- |
 | **AI hallucinates pesticide dosage**              | Medium      | Critical | System prompt NEVER rule + no dosage tool                     |
 | **Gemini free tier rate limited during demo**     | Low         | High     | Pre-cache common queries, demo with small audience            |
 | **Farmer confused by AI response**                | Medium      | Medium   | Simple language rule, max 3 sentences, actionable suggestions |
@@ -1510,16 +1510,16 @@ This enables investigation of any AI response that a farmer questions.
 
 ### Phase 1: NL Foundation (Week 1–2)
 
-| Task                                                                 | Priority | Effort |
-| -------------------------------------------------------------------- | -------- | ------ |
-| Context Engine — assembles farmer/crop/weather context per request   | P0       | 3 days |
+| Task                                                                    | Priority | Effort |
+| ----------------------------------------------------------------------- | -------- | ------ |
+| Context Engine — assembles farmer/crop/weather context per request     | P0       | 3 days |
 | Tool Registry —`tool_registry` table + 12 tool schemas + tool router | P0       | 2 days |
-| `/chat/send` endpoint with Gemini Flash function calling             | P0       | 2 days |
-| System prompt with safety boundaries (v1.0)                          | P0       | 1 day  |
-| `chat_sessions` + `chat_messages` tables + Alembic migration         | P0       | 1 day  |
-| Confidence tier logic (execute/confirm/clarify/decline)              | P0       | 1 day  |
-| Global command bar UI component (⌘K style)                           | P1       | 2 days |
-| Session management (create/close/timeout)                            | P1       | 1 day  |
+| `/chat/send` endpoint with Gemini Flash function calling              | P0       | 2 days |
+| System prompt with safety boundaries (v1.0)                             | P0       | 1 day  |
+| `chat_sessions` + `chat_messages` tables + Alembic migration        | P0       | 1 day  |
+| Confidence tier logic (execute/confirm/clarify/decline)                 | P0       | 1 day  |
+| Global command bar UI component (⌘K style)                             | P1       | 2 days |
+| Session management (create/close/timeout)                               | P1       | 1 day  |
 
 **Phase 1 Demo**: Farmer types _"Kal baarish hogi?"_ in command bar → weather tool called → Hindi response displayed.
 
@@ -1530,24 +1530,24 @@ This enables investigation of any AI response that a farmer questions.
 | Web Speech API integration (browser STT/TTS)                 | P0       | 2 days |
 | Push-to-talk voice FAB on farmer mobile portal               | P0       | 2 days |
 | Hindi/Marathi response via system prompt language detection  | P0       | 1 day  |
-| NL form filling — entity extraction → pre-fill + confirm     | P1       | 3 days |
+| NL form filling — entity extraction → pre-fill + confirm   | P1       | 3 days |
 | Inline NL fields on dashboard pages (plots, crops, expenses) | P1       | 2 days |
-| Feedback collection (`chat_feedback` table + UI)             | P1       | 1 day  |
-| Failure modes — offline queue, API fallbacks, STT retry      | P1       | 2 days |
+| Feedback collection (`chat_feedback` table + UI)           | P1       | 1 day  |
+| Failure modes — offline queue, API fallbacks, STT retry     | P1       | 2 days |
 
 **Phase 2 Demo**: Farmer speaks _"2 bag DAP daala gehun mein"_ → form auto-fills → confirms → saved.
 
 ### Phase 3: RAG + Intelligence + Polish (Week 5–6)
 
-| Task                                                                   | Priority | Effort |
-| ---------------------------------------------------------------------- | -------- | ------ |
-| pgvector extension +`knowledge_embeddings` table                       | P0       | 1 day  |
+| Task                                                                    | Priority | Effort |
+| ----------------------------------------------------------------------- | -------- | ------ |
+| pgvector extension +`knowledge_embeddings` table                      | P0       | 1 day  |
 | Embedding pipeline — chunk, embed, store crop manuals + disease guides | P0       | 2 days |
-| RAG retrieval integration in chat pipeline                             | P0       | 2 days |
-| Multi-turn conversations with session memory (last 10 messages)        | P1       | 1 day  |
-| SSE streaming for long responses                                       | P1       | 2 days |
+| RAG retrieval integration in chat pipeline                              | P0       | 2 days |
+| Multi-turn conversations with session memory (last 10 messages)         | P1       | 1 day  |
+| SSE streaming for long responses                                        | P1       | 2 days |
 | NL analytics — inline charts from natural language queries             | P2       | 2 days |
-| NL navigation — "Open Plot 4" → client-side routing                    | P2       | 1 day  |
+| NL navigation — "Open Plot 4" → client-side routing                   | P2       | 1 day  |
 | Correction feedback loop (user corrects AI → stored)                   | P2       | 1 day  |
 
 **Phase 3 Demo**: Farmer asks about PM-KISAN → RAG retrieves scheme doc → AI summarizes eligibility in Hindi.
@@ -1556,18 +1556,18 @@ This enables investigation of any AI response that a farmer questions.
 
 ## Appendix A — Glossary
 
-| Term        | Definition                                                                      |
-| ----------- | ------------------------------------------------------------------------------- |
+| Term              | Definition                                                                       |
+| ----------------- | -------------------------------------------------------------------------------- |
 | **CIE**     | Conversational Intelligence Engine — this system                                |
-| **NL**      | Natural Language                                                                |
-| **Tool**    | A registered capability that Gemini can invoke (e.g.,`weather_tool`)            |
-| **Intent**  | The purpose behind a user's message (e.g.,`weather.forecast`)                   |
-| **Entity**  | A data element extracted from the message (e.g., crop="gehun", quantity=2)      |
+| **NL**      | Natural Language                                                                 |
+| **Tool**    | A registered capability that Gemini can invoke (e.g.,`weather_tool`)           |
+| **Intent**  | The purpose behind a user's message (e.g.,`weather.forecast`)                  |
+| **Entity**  | A data element extracted from the message (e.g., crop="gehun", quantity=2)       |
 | **RAG**     | Retrieval Augmented Generation — injecting retrieved knowledge into LLM context |
-| **STT**     | Speech-to-Text                                                                  |
-| **TTS**     | Text-to-Speech                                                                  |
-| **FAB**     | Floating Action Button (mobile)                                                 |
-| **Context** | The assembled farmer/crop/weather/activity data injected into every prompt      |
+| **STT**     | Speech-to-Text                                                                   |
+| **TTS**     | Text-to-Speech                                                                   |
+| **FAB**     | Floating Action Button (mobile)                                                  |
+| **Context** | The assembled farmer/crop/weather/activity data injected into every prompt       |
 
 ---
 

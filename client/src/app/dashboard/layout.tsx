@@ -248,6 +248,7 @@ export default function DashboardLayout({
   const adminNavItems = [
     { href: "/dashboard", label: "Dashboard", icon: <LayoutDashboard className="w-4 h-4" /> },
     { href: "/dashboard/farmers", label: "Farmers", icon: <Users className="w-4 h-4" /> },
+    { href: "/dashboard/groups", label: "Groups", icon: <Users className="w-4 h-4" /> },
     { href: "/dashboard/plots", label: "Farm Plots", icon: <Map className="w-4 h-4" /> },
     { href: "/dashboard/crops", label: "Crops", icon: <Sprout className="w-4 h-4" /> },
     { href: "/dashboard/health", label: "Crop Health", icon: <HeartPulse className="w-4 h-4" /> },

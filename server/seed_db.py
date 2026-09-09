@@ -36,6 +36,8 @@ from app.models import (
     WeatherData,
     IrrigationLog,
     Simulation,
+    Group,
+    GroupMember,
 )
 
 async def seed_database():
@@ -394,6 +396,36 @@ async def seed_database():
             completed_at=datetime.now(UTC)
         )
         session.add(drought_sim)
+
+        # 11. Create Groups & Members
+        group1 = Group(
+            id=uuid.uuid4(),
+            name="Sonipat Cooperative",
+            description="Cooperative group for farmers in the Sonipat region to share tools, fertilizers, and inputs advice.",
+            code="COOP1012"
+        )
+        group2 = Group(
+            id=uuid.uuid4(),
+            name="Karnal Rice Farmers Club",
+            description="A local group sharing crop advisories and market price trends specifically for Basmati Rice growers in Karnal.",
+            code="RICE9944"
+        )
+        session.add(group1)
+        session.add(group2)
+        await session.flush()
+
+        member1 = GroupMember(
+            id=uuid.uuid4(),
+            group_id=group1.id,
+            user_id=farmer_ramesh.id
+        )
+        member2 = GroupMember(
+            id=uuid.uuid4(),
+            group_id=group2.id,
+            user_id=farmer_suresh.id
+        )
+        session.add(member1)
+        session.add(member2)
 
         # Commit everything
         await session.commit()
