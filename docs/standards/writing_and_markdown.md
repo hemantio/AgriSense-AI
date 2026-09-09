@@ -98,7 +98,7 @@ Approved identifiers are: `typescript`, `python`, `json`, `yaml`, `bash`, `sql`,
 *   **NEVER** use real secrets or API keys in code snippets.
 *   Always use descriptive, standard placeholders.
     *   *Correct*: `process.env.GEMINI_API_KEY = "your_gemini_api_key_here"`
-    *   *Incorrect*: `process.env.GEMINI_API_KEY = "AIzaSy..."`
+    *   *Incorrect*: `process.env.GEMINI_API_KEY = "<RAW_UNMASKED_KEY>"`
 
 ### 4.3 Code Quality and Type Imports
 Within TypeScript code blocks:

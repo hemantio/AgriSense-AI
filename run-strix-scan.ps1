@@ -8,9 +8,14 @@
 #        .\run-strix-scan.ps1
 # ============================================================
 
-$env:GEMINI_API_KEY = "AIzaSyCCaQ0PioRmrwYff-7EVlpsVYRj8a355rk"
+if (-not $env:GEMINI_API_KEY) {
+    Write-Host "Warning: GEMINI_API_KEY environment variable is not set." -ForegroundColor Yellow
+    Write-Host "Set it using: `$env:GEMINI_API_KEY = 'your_api_key_here'`n" -ForegroundColor Yellow
+}
+if (-not $env:LLM_API_KEY -and $env:GEMINI_API_KEY) {
+    $env:LLM_API_KEY = $env:GEMINI_API_KEY
+}
 $env:STRIX_LLM = "gemini/gemini-2.0-flash"
-$env:LLM_API_KEY = "AIzaSyCCaQ0PioRmrwYff-7EVlpsVYRj8a355rk"
 
 Write-Host "`n🛡️  Starting Strix Deep Penetration Test on AgriSense AI...`n" -ForegroundColor Cyan
 

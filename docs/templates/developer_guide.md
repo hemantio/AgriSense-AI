@@ -57,7 +57,7 @@ Ensure you populate your `.env` with valid keys. **NEVER** commit actual secrets
 
 | Key Name | Sample Value | Required For | Security Constraints |
 | :--- | :--- | :---: | :--- |
-| `GEMINI_API_KEY` | `AIzaSyD7...` | AI inference models | High-risk secret. Keep strictly hidden. |
+| `GEMINI_API_KEY` | `your_gemini_api_key_here` | AI inference models | High-risk secret. Keep strictly hidden. |
 | `NEXT_PUBLIC_API_URL`| `/api/v1` | Frontend API client | Safe for client-side bundle exposure. |
 | `DATABASE_URL` | `postgresql://...` | Database connection | Private database credential. |
 

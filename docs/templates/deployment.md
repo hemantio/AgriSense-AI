@@ -46,7 +46,7 @@ All secrets and sensitive production API keys must be stored in Google Cloud Sec
 | Environment Key | Config Location | Encryption Required | Default Value (Staging) |
 | :--- | :--- | :---: | :--- |
 | `DATABASE_URL` | Cloud Secret Manager | **Yes** | `postgresql://db_user:pwd@host:5432/agri` |
-| `GEMINI_API_KEY` | Cloud Secret Manager | **Yes** | `AIzaSyD7...` |
+| `GEMINI_API_KEY` | Cloud Secret Manager | **Yes** | `your_gemini_api_key_here` |
 | `PORT` | Hardcoded / Platform Config | No | `3000` (Nginx routes traffic here) |
 
 ---
